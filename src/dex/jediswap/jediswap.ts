@@ -15,13 +15,6 @@ export class Jediswap extends l0_or_jediSWAP {
     private ABI: any[] = contractABI
     private taskName = 'jediSwap'
 
-    // constructor(
-    //     private account: Account,
-    //     public contracts = new Contracts()
-    // ) {
-    //     super()
-    // }
-
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
         
