@@ -15,7 +15,7 @@ export class L0kswap extends l0_or_jediSWAP {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
         
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
         }
 
         const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)
@@ -45,7 +45,7 @@ export class L0kswap extends l0_or_jediSWAP {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
         
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
         }
 
         const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)

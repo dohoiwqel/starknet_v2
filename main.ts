@@ -66,6 +66,18 @@ function showTasks(tasks: Array<Task>, accountAddress: string) {
     logger.info(`Путь для кошелька ${accountAddress} [${names.join(" -> ")}]\n`)
 }
 
+function getRandomInt(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+  }
+
+function sleep(config: Iconfig) {
+    const seconds = getRandomInt(config.sleep_min, config.sleep_max) * 1000
+    console.log(`Спим ${seconds} секунд`)
+    return new Promise(resolve => setTimeout(() => resolve(''), seconds))
+}
+
 async function batchCreate(config: Iconfig) {
     logger.info(`Создаем ${config.batch_create_number} аккаунтов старкнет`)
     const myAccounts = new MyAccounts()
@@ -77,7 +89,9 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
     
     for(let task of tasks) {
         try {
+            await waitForGas(account, config, account)
             await task(account, config)
+            await sleep(config)
         } catch(e) {
             logger.error(e, account.address, task.name)
         }
@@ -106,8 +120,6 @@ async function main() {
                 const myAccounts = new MyAccounts(provider)
                 const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
                 await myAccounts.checkDeploy(account, privateKey)
-
-                await waitForGas(provider, config, account)
                 
                 const shuffledTasks = shuffleTask(tasks)
                 showTasks(shuffledTasks, account.address)

@@ -12,5 +12,7 @@ export interface Iconfig {
     "LIQ_TO": number,
     "Dmail_mails_count": number,
     "batch_create": boolean,
-    "batch_create_number": number
+    "batch_create_number": number,
+    "sleep_min": number,
+    "sleep_max": number,
 }

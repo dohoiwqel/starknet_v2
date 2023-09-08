@@ -30,14 +30,17 @@ export class Dex {
         return uint256.uint256ToBN(allowance.remaining)
     }
 
-    async approve(account: Account, token: Token, amount: uint256.Uint256, spender: string) {
+    async approve(account: Account, token: Token, amount: uint256.Uint256, spender: string, task_name: string) {
         const contractAddress = token.contractAddress
         const ABI = token.ABI
         const contract = new Contract(ABI, contractAddress)        
         contract.connect(account)
         const res = await contract.approve(spender, amount)
-        if(await this.waitForTransaction(res.transaction_hash)) logger.success(`Выполнен аппрув | ${res.transaction_hash}`, account.address)
-        else logger.error(`Не удалось выполнить аппрув ${res.transaction_hash}`, account.address)
+        if(await this.waitForTransaction(res.transaction_hash)){
+            logger.success(`Выполнен аппрув ${res.transaction_hash}`, account.address, task_name)
+        } else {
+            logger.error(`Не удалось выполнить аппрув ${res.transaction_hash}`, account.address)
+        }
     }
 
     getTokenTo(tokenFrom: Token) {

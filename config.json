@@ -1,9 +1,15 @@
 {
+    "batch_create": false,
+    "batch_create_number": 5,
+
     "jediSwap": true,
     "jediSwap_liq": false,
     "l0kSwap": true,
     "mySwap": true,
     "dmail": true,
+
+    "sleep_min": 5,
+    "sleep_max": 10,
 
     "stableSwap": true,
     "stable_amount_to_swap": 0,
@@ -11,7 +17,5 @@
     "slippage": 1,
     "LIQ_FROM": 1,
     "LIQ_TO": 1,
-    "Dmail_mails_count": 2,
-    "batch_create": false,
-    "batch_create_number": 5
+    "Dmail_mails_count": 2
 }

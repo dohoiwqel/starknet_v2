@@ -96,7 +96,7 @@ export class Myswap extends Dex {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
 
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
         }
 
         const poolId = this.getPoolId(tokenFrom, tokenTo)
@@ -126,7 +126,7 @@ export class Myswap extends Dex {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
         
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
         }
 
         const poolId = this.getPoolId(tokenFrom, tokenTo)
