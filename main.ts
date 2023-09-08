@@ -1,4 +1,4 @@
-import { Account, Contract, Provider, SequencerProvider, constants, ec, transaction, uint256, ProviderInterface, stark } from "starknet";
+import { Account, Provider, SequencerProvider, constants } from "starknet";
 import readline from 'readline'
 import * as fs from 'fs'
 import path from 'path'

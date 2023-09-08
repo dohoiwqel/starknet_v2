@@ -54,7 +54,7 @@ export class Dmail {
                 const res = await contract.transaction(email, text)
 
                 if(await this.waitForTransaction(res.transaction_hash)) {
-                    logger.success(`Отправлено письмо${res.transaction_hash}`, this.account.address, this.taskName)
+                    logger.success(`Отправлено письмо ${res.transaction_hash}`, this.account.address, this.taskName)
                 }
                 
             } catch(e) {

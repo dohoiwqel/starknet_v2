@@ -1,8 +1,8 @@
 {
-    "jediSwap": false,
+    "jediSwap": true,
     "jediSwap_liq": false,
-    "l0kSwap": false,
-    "mySwap": false,
+    "l0kSwap": true,
+    "mySwap": true,
     "dmail": true,
 
     "stableSwap": true,
