@@ -16,4 +16,6 @@ export interface Iconfig {
     "sleep_min": number,
     "sleep_max": number,
     "starkgate": boolean,
+    "starkgate_amount": string,
+    "starkgate_show_fee": boolean,
 }

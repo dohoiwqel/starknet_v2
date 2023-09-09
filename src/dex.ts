@@ -65,10 +65,10 @@ export class l0_or_jediSWAP extends Dex {
         //Если обмениваем в ETH
         if(tokenTo.ticker === 'ETH') {
             const ethPrice = await getEthPrice()
-            const formatAmountIn = Number(ethers.utils.formatUnits(amountIn, tokenFrom.decimals))
-            const amountOut = ethers.utils.parseUnits((formatAmountIn / ethPrice).toFixed(tokenTo.decimals).toString(), tokenTo.decimals)
-            const percent = (amountOut.toBigInt() * BigInt(slippage.nominator)) / BigInt(100 * slippage.denominator)
-            const result = amountOut.toBigInt() - percent
+            const formatAmountIn = Number(ethers.formatUnits(amountIn, tokenFrom.decimals))
+            const amountOut = ethers.parseUnits((formatAmountIn / ethPrice).toFixed(tokenTo.decimals).toString(), tokenTo.decimals)
+            const percent = (amountOut * BigInt(slippage.nominator)) / BigInt(100 * slippage.denominator)
+            const result = amountOut - percent
             return result
         }
 

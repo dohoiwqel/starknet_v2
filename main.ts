@@ -110,7 +110,17 @@ async function main() {
     }
 
     if(config.starkgate) {
-        await tas
+        const myAccounts = new MyAccounts(provider)
+        const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
+        const ethPrivates = await read('ethPrivates.txt')
+
+        for(let [i, ethPrivate] of ethPrivates.entries()) {
+            const wallet = new ethers.Wallet(ethPrivate, ethProvider)
+            const {account, privateKey} = await myAccounts.getAccount(privates[i])
+
+            const l2Address = account.address
+            await task_starkgate(wallet, l2Address, account.address, config)
+        }
     }
 
     logger.info(`Обнаружен ${privates.length} аккаунтов`)

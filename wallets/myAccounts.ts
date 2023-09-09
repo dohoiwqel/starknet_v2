@@ -1,6 +1,6 @@
 import { Account, Contract, Provider, SequencerProvider, constants, ec, transaction, uint256, ProviderInterface, stark, GatewayError } from "starknet";
 import { ABI } from "./ABI";
-import { ethers, utils } from "ethers";
+import { ethers } from "ethers";
 import { calculateAddressBraavos, deployBraavosAccount } from "./deploy_bravos";
 import * as XLSX from 'xlsx'
 import { logger } from "../logger/logger";
@@ -41,9 +41,10 @@ export class MyAccounts {
     
         const N_minus_n = N - (N % starkCurveOrder);
         for (let i = 0; ; i++) {
-            const x = utils.concat([key0, utils.arrayify(i)]);
+            const hex = '0x0' + (i).toString(16)
+            const x = ethers.concat([key0, ethers.getBytes(hex)]);
     
-            const key = BigInt(utils.hexlify(utils.sha256(x)));
+            const key = BigInt(ethers.hexlify(ethers.sha256(x)));
     
             if (key < N_minus_n) {
                 return `0x0${(key % starkCurveOrder).toString(16)}`;
@@ -52,8 +53,8 @@ export class MyAccounts {
     };
     
     private getBraavosPrivateKey(mnemonic: string) {
-        const seed = utils.mnemonicToSeed(mnemonic);
-        let hdnode = utils.HDNode.fromSeed(seed);
+        const seed = (ethers.Mnemonic.fromPhrase(mnemonic)).computeSeed();
+        let hdnode = ethers.HDNodeWallet.fromSeed(seed);
         hdnode = hdnode.derivePath(`m/44'/9004'/0'/0/0`);
         const groundKey = this.EIP2645Hashing(hdnode.privateKey);
         return groundKey
@@ -91,10 +92,10 @@ export class MyAccounts {
 
         let dataArr: any[] = []
 
-        dataArr.push(["Address", "", "PrivateKey","", "Mnemonic"])
+        dataArr.push(["Address", "PrivateKey", "Mnemonic"])
 
         for(let i=0; i<count; i++) {
-            const mnemonic = ethers.Wallet.createRandom().mnemonic.phrase
+            const mnemonic = ethers.Wallet.createRandom().mnemonic!.phrase
             const privateKey = this.getBraavosPrivateKey(mnemonic)
             const accountAddress = calculateAddressBraavos(privateKey)
 

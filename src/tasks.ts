@@ -138,7 +138,7 @@ export async function task_dmail(account: Account, config: Iconfig) {
     await dmail.sendMail(config.Dmail_mails_count)
 }
 
-export async function task_starkgate(account: ethers.Wallet, l2Address: string, amount: string) {
+export async function task_starkgate(account: ethers.Wallet, l2Address: string, amount: string, config: Iconfig) {
     const starkgate = new Starkgate(account)
-    await starkgate.bridge(amount, l2Address)
+    await starkgate.bridge(amount, l2Address, config)
 }
