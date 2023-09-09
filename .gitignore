@@ -126,3 +126,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 privates.txt
+getAddress.ts
+output.xlsx
+*.txt

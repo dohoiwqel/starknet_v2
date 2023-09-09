@@ -15,4 +15,5 @@ export interface Iconfig {
     "batch_create_number": number,
     "sleep_min": number,
     "sleep_max": number,
+    "starkgate": boolean,
 }

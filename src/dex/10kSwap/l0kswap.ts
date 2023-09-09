@@ -1,7 +1,7 @@
 import { Contract, uint256 } from "starknet";
 import { contractABI } from './contractABI';
 import { denomNumber } from '../../denominator';
-import { Dex, l0_or_jediSWAP } from '../dex';
+import { Dex, l0_or_jediSWAP } from '../../dex';
 import { logger } from "../../../logger/logger";
 import { Token } from "../../tokens/tokens";
 

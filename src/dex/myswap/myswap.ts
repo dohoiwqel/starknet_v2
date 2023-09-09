@@ -1,9 +1,9 @@
 import { Account, CallData, Contract, EstimateFeeResponse, Provider, ProviderInterface, provider, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { BigNumberish } from 'starknet';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
-import { Dex } from '../dex';
+import { Dex } from '../../dex';
 import axios from 'axios'
 import { logger } from '../../../logger/logger';
 import { Token } from '../../tokens/tokens';
@@ -81,7 +81,7 @@ export class Myswap extends Dex {
 
             const usdValue = amountIn * ethPrice / tokenPrice
             
-            const minAmountIn = BigInt(ethers.utils.formatUnits(usdValue, tokenFrom.decimals - tokenTo.decimals).split('.')[0])
+            const minAmountIn = BigInt(ethers.formatUnits(usdValue, tokenFrom.decimals - tokenTo.decimals).split('.')[0])
             const percent = (minAmountIn * BigInt(slippage.nominator)) / BigInt(100 * slippage.denominator)
             const result = minAmountIn - percent
             return result
@@ -145,8 +145,8 @@ export class Myswap extends Dex {
         console.log([
             poolId, 
             tokenFrom.contractAddress,
-            ethers.utils.formatEther(amountIn.toString()),
-            ethers.utils.formatUnits(minAmountOut.toString(), 6),
+            ethers.formatEther(amountIn.toString()),
+            ethers.formatUnits(minAmountOut.toString(), 6),
         ])
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 

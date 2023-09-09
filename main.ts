@@ -3,17 +3,16 @@ import readline from 'readline'
 import * as fs from 'fs'
 import path from 'path'
 import { Iconfig } from './interfaces/iconfig';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
-import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap } from "./src/tasks";
+import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate } from "./src/tasks";
 
 async function waitForGas(provider: SequencerProvider | Provider, config: Iconfig, account: Account) {
     let gasPrice: number
     while(true) {
         const block = await provider.getBlock("latest")
-        const gasInWei = BigNumber.from(block.gas_price).toString()
-        gasPrice = Math.round(Number(ethers.utils.formatUnits(gasInWei, "gwei")))
+        gasPrice = Math.round(Number(ethers.formatUnits(block.gas_price!, "gwei")))
         if(gasPrice > config.minGasPrice) {
             console.log(`Ждем пока газ опустится до ${config.minGasPrice}. Текущий газ ${gasPrice} Gwei`)
             await new Promise(resolve => {setTimeout(() => resolve(' '), 10_000)})
@@ -70,7 +69,7 @@ function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-  }
+}
 
 function sleep(config: Iconfig) {
     const seconds = getRandomInt(config.sleep_min, config.sleep_max) * 1000
@@ -108,6 +107,10 @@ async function main() {
     if(config.batch_create) {
         await batchCreate(config)
         return
+    }
+
+    if(config.starkgate) {
+        await tas
     }
 
     logger.info(`Обнаружен ${privates.length} аккаунтов`)

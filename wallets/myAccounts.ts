@@ -91,14 +91,14 @@ export class MyAccounts {
 
         let dataArr: any[] = []
 
-        dataArr.push(["Mnemonic", "", "PrivateKey","", "Address"])
+        dataArr.push(["Address", "", "PrivateKey","", "Mnemonic"])
 
         for(let i=0; i<count; i++) {
             const mnemonic = ethers.Wallet.createRandom().mnemonic.phrase
             const privateKey = this.getBraavosPrivateKey(mnemonic)
             const accountAddress = calculateAddressBraavos(privateKey)
 
-            dataArr.push([mnemonic, "", privateKey, "", accountAddress])
+            dataArr.push([accountAddress, privateKey, mnemonic])
         }
 
         this.writeToXLSX(dataArr)

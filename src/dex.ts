@@ -1,9 +1,9 @@
 import { Account, Contract, Provider, SequencerProvider, TransactionStatus, constants, uint256 } from "starknet"
-import { denomNumber } from "../denominator"
-import { getEthPrice } from "./oracles/oracle"
+import { denomNumber } from "./denominator"
+import { getEthPrice } from "./dex/oracles/oracle"
 import { ethers } from "ethers"
-import { logger } from "../../logger/logger"
-import { Token, Tokens } from "../tokens/tokens"
+import { logger } from "../logger/logger"
+import { Token, Tokens } from "./tokens/tokens"
 
 export class Dex {
 

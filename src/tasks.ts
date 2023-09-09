@@ -9,6 +9,7 @@ import { Jediswap } from "./dex/jediswap/jediswap";
 import { logger } from "../logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
+import { Starkgate } from "./Starkgate/Starkgate";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>  
 
@@ -20,10 +21,10 @@ export async function task_mySwap(account: Account, config: Iconfig) {
     if(config.stableSwap) {
         //Поиск стейблкоина с максимальным балансом
         let {token, balance} = await finder.getHighestBalanceToken()
-        const formatStableAmount = ethers.utils.parseUnits(config.stable_amount_to_swap.toString(), token.decimals).toBigInt()
+        const formatStableAmount = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
 
         if(formatStableAmount > 0n && formatStableAmount < balance) {
-            balance = ethers.utils.parseUnits(config.stable_amount_to_swap.toString(), token.decimals).toBigInt()
+            balance = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
         }
 
         const slippage = makeDenominator(config.slippage)
@@ -35,7 +36,7 @@ export async function task_mySwap(account: Account, config: Iconfig) {
         let {eToken, eBalance} = await finder.getEth()
         const ethToRemain = "0.002"
 
-        let ethToTrade = eBalance - BigInt(ethers.utils.parseEther(ethToRemain).toString())
+        let ethToTrade = eBalance - BigInt(ethers.parseEther(ethToRemain).toString())
         const tokenTo = mySwap.getTokenTo(eToken)
         const slippage = makeDenominator(config.slippage)
 
@@ -58,8 +59,7 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
         let {token, balance} = await finder.getHighestBalanceToken()
 
         if(config.stable_amount_to_swap > 0) {
-            balance = ethers.utils.parseUnits(config.stable_amount_to_swap.toString(), token.decimals).toBigInt()
-            console.log(balance)
+            balance = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
         }
 
         const slippage = makeDenominator(config.slippage)
@@ -71,7 +71,7 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
         let {eToken, eBalance} = await finder.getEth()
         const ethToRemain = "0.002"
 
-        let ethToTrade = eBalance - BigInt(ethers.utils.parseEther(ethToRemain).toString())
+        let ethToTrade = eBalance - BigInt(ethers.parseEther(ethToRemain).toString())
         const tokenTo = l0kSwap.getTokenTo(eToken)
         const slippage = makeDenominator(config.slippage)
 
@@ -94,8 +94,7 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
         let {token, balance} = await finder.getHighestBalanceToken()
 
         if(config.stable_amount_to_swap > 0) {
-            balance = ethers.utils.parseUnits(config.stable_amount_to_swap.toString(), token.decimals).toBigInt()
-            console.log(balance)
+            balance = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
         }
 
         const slippage = makeDenominator(config.slippage)
@@ -107,7 +106,7 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
         let {eToken, eBalance} = await finder.getEth()
         const ethToRemain = "0.002"
 
-        let ethToTrade = eBalance - BigInt(ethers.utils.parseEther(ethToRemain).toString())
+        let ethToTrade = eBalance - BigInt(ethers.parseEther(ethToRemain).toString())
         const tokenTo = jediSwap.getTokenTo(eToken)
         const slippage = makeDenominator(config.slippage)
 
@@ -139,3 +138,7 @@ export async function task_dmail(account: Account, config: Iconfig) {
     await dmail.sendMail(config.Dmail_mails_count)
 }
 
+export async function task_starkgate(account: ethers.Wallet, l2Address: string, amount: string) {
+    const starkgate = new Starkgate(account)
+    await starkgate.bridge(amount, l2Address)
+}

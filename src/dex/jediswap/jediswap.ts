@@ -1,9 +1,9 @@
 import { Account, CallData, Contract, Provider, ProviderInterface, provider, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { BigNumberish } from 'starknet';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
-import { Dex, l0_or_jediSWAP } from '../dex';
+import { Dex, l0_or_jediSWAP } from '../../dex';
 import { getEthPrice } from '../oracles/oracle';
 import axios, { all } from 'axios'
 import { logger } from '../../../logger/logger';
@@ -122,8 +122,8 @@ export class Jediswap extends l0_or_jediSWAP {
         const ethPrice = BigInt(await getEthPrice())
         
         const ethUSDBalance = ethBalance * ethPrice
-        const formatethUSDBalance = BigInt(Math.floor(parseInt(ethers.utils.formatUnits(ethUSDBalance, 12))))
-        const formatDepositValue = BigInt(ethers.utils.parseUnits(depositValue.toString(), 6).toString())
+        const formatethUSDBalance = BigInt(Math.floor(parseInt(ethers.formatUnits(ethUSDBalance, 12))))
+        const formatDepositValue = BigInt(ethers.parseUnits(depositValue.toString(), 6).toString())
 
         if(usdtBalance < formatDepositValue) {
 
@@ -138,7 +138,7 @@ export class Jediswap extends l0_or_jediSWAP {
             if(formatethUSDBalance > formatDepositValue) {
                 // const needToSwapUSD = formatethUSDBalance - formatDepositValue
                 const needToSwapEth = needToSwapUSD / ethPrice
-                const formatNeedToSwapEth = ethers.utils.parseEther(needToSwapEth.toString()).toBigInt()
+                const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
                 return
             }
@@ -157,7 +157,7 @@ export class Jediswap extends l0_or_jediSWAP {
 
             if(formatethUSDBalance > formatDepositValue) {
                 const needToSwapEth = needToSwapUSD / ethPrice
-                const formatNeedToSwapEth = ethers.utils.parseEther(needToSwapEth.toString()).toBigInt()
+                const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
                 return
             }
@@ -172,9 +172,9 @@ export class Jediswap extends l0_or_jediSWAP {
 
         const ratio = await this.getRatio()
 
-        console.log(`DEV: 1 USDT === ${ethers.utils.formatUnits(ratio, 6)} USDC`)
+        console.log(`DEV: 1 USDT === ${ethers.formatUnits(ratio, 6)} USDC`)
 
-        const amountA = BigInt(ethers.utils.parseUnits(number.toString(), this.tokens.USDT.decimals).toString())
+        const amountA = BigInt(ethers.parseUnits(number.toString(), this.tokens.USDT.decimals).toString())
         const amountB = amountA * ratio / 1_000_000n
         const deadline = String(Math.round(Date.now() / 1000 + 3600));
 
