@@ -10,12 +10,13 @@ import { logger } from "../logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
 import { Starkgate } from "./Starkgate/Starkgate";
+import { UpgradeImplementation } from "./Upgrade/upgrade";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>  
 
 export async function task_mySwap(account: Account, config: Iconfig) {
 
-    const mySwap = new Myswap(account)
+    const mySwap = new Myswap(account, "mySwap")
     const finder = new Finder(account)
 
     if(config.stableSwap) {
@@ -50,7 +51,7 @@ export async function task_mySwap(account: Account, config: Iconfig) {
 
 export async function task_10kSwap(account: Account, config: Iconfig) {
 
-    const l0kSwap = new L0kswap(account)
+    const l0kSwap = new L0kswap(account, "10kSwap")
     const finder = new Finder(account)
 
     if(config.stableSwap) {
@@ -85,7 +86,7 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
 
 export async function task_jediSwap(account: Account, config: Iconfig) {
 
-    const jediSwap = new Jediswap(account)
+    const jediSwap = new Jediswap(account, "jediSwap_liq")
     const finder = new Finder(account)
 
     if(config.stableSwap) {
@@ -119,7 +120,7 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
 }
 
 export async function task_jediSwap_liq(account: Account, config: Iconfig) {
-    const jediSwap = new Jediswap(account)
+    const jediSwap = new Jediswap(account, "jediSwap")
 
     if(config.LIQ_FROM > config.LIQ_TO) {
         throw new Error("LIQ_TO должны быть больше чем LIQ_FROM")
@@ -134,11 +135,17 @@ export async function task_dmail(account: Account, config: Iconfig) {
         logger.error(`Выбран модуль dmail. Количество dmail_mails_count должно быть больше 0`)
     }
 
-    const dmail = new Dmail(account)
+    const dmail = new Dmail(account, "Dmail")
     await dmail.sendMail(config.Dmail_mails_count)
 }
 
-export async function task_starkgate(account: ethers.Wallet, l2Address: string, amount: string, config: Iconfig) {
+export async function task_starkgate(account: ethers.Wallet, l2Address: string, value: string, amount: string, gasPrice: bigint) {
     const starkgate = new Starkgate(account)
-    await starkgate.bridge(amount, l2Address, config)
+    await starkgate.bridge(l2Address, value, amount, gasPrice)
+}
+
+export async function task_upgrade_implementation(account: Account) {
+    const upgrade = new UpgradeImplementation(account, "Upgrade")
+    const currentVersion = "000.000.011"
+    await upgrade.upgrade(currentVersion)
 }

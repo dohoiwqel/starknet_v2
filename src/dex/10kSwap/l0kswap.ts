@@ -9,7 +9,6 @@ export class L0kswap extends l0_or_jediSWAP {
 
     private contractAddress: string = "0x07a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1"
     private ABI: any[] = contractABI
-    private taskName = '10kSwap'
 
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)

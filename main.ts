@@ -1,4 +1,4 @@
-import { Account, Provider, SequencerProvider, constants } from "starknet";
+import { Account, Provider, SequencerProvider, constants, stark } from "starknet";
 import readline from 'readline'
 import * as fs from 'fs'
 import path from 'path'
@@ -6,12 +6,13 @@ import { Iconfig } from './interfaces/iconfig';
 import { ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
-import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate } from "./src/tasks";
+import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate, task_upgrade_implementation } from "./src/tasks";
+import { Starkgate } from "./src/Starkgate/Starkgate";
 
-async function waitForGas(provider: SequencerProvider | Provider, config: Iconfig, account: Account) {
+async function waitForGas(account: Account, config: Iconfig) {
     let gasPrice: number
     while(true) {
-        const block = await provider.getBlock("latest")
+        const block = await account.getBlock("latest")
         gasPrice = Math.round(Number(ethers.formatUnits(block.gas_price!, "gwei")))
         if(gasPrice > config.minGasPrice) {
             console.log(`Ждем пока газ опустится до ${config.minGasPrice}. Текущий газ ${gasPrice} Gwei`)
@@ -21,7 +22,7 @@ async function waitForGas(provider: SequencerProvider | Provider, config: Iconfi
         }
     }
 
-    console.log(`Текущий газ ${gasPrice!} Gwei начинаем работу с аккаунтом ${account.address}`)
+    // console.log(`Текущий газ ${gasPrice!} Gwei начинаем работу с аккаунтом ${account.address}`)
     return
 }
 
@@ -45,6 +46,7 @@ function getTasks(config: Iconfig) {
     if(config.l0kswap) tasks.push(task_10kSwap);
     if(config.mySwap) tasks.push(task_mySwap);
     if(config.dmail) tasks.push(task_dmail);
+    if(config.upgrade) tasks.push(task_upgrade_implementation);
 
     return tasks
 }
@@ -62,7 +64,7 @@ function showTasks(tasks: Array<Task>, accountAddress: string) {
         names.push(task.name)
     }
 
-    logger.info(`Путь для кошелька ${accountAddress} [${names.join(" -> ")}]\n`)
+    logger.info(`Путь для кошелька ${accountAddress} [${names.join(" -> ")}]`)
 }
 
 function getRandomInt(min: number, max: number) {
@@ -72,9 +74,9 @@ function getRandomInt(min: number, max: number) {
 }
 
 function sleep(config: Iconfig) {
-    const seconds = getRandomInt(config.sleep_min, config.sleep_max) * 1000
-    console.log(`Спим ${seconds} секунд`)
-    return new Promise(resolve => setTimeout(() => resolve(''), seconds))
+    const seconds = getRandomInt(config.sleep_min, config.sleep_max) 
+    // console.log(`Спим ${seconds} секунд`)
+    return new Promise(resolve => setTimeout(() => resolve(''), seconds*1000))
 }
 
 async function batchCreate(config: Iconfig) {
@@ -88,7 +90,7 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
     
     for(let task of tasks) {
         try {
-            await waitForGas(account, config, account)
+            await waitForGas(account, config)
             await task(account, config)
             await sleep(config)
         } catch(e) {
@@ -110,17 +112,42 @@ async function main() {
     }
 
     if(config.starkgate) {
+        const starkgate = new Starkgate()
         const myAccounts = new MyAccounts(provider)
         const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
         const ethPrivates = await read('ethPrivates.txt')
 
+        const gasPrice = (await ethProvider.getFeeData()).gasPrice
+        const starknetFee = await starkgate.getStarknetFee()
+
+        if(config.starkgate_show_fee) {
+            const gas = 125_000n
+            const executionFee = gas * gasPrice!
+            const value = ethers.parseEther(config.starkgate_amount)
+
+            const total = ethers.formatEther((executionFee + value + starknetFee).toString().split('.')[0]) 
+            logger.info(`Для бриджа нужно минимум ${total}`, undefined, 'Strakgate')
+            return
+        }
+
+        if(ethPrivates.length === 0) {
+            throw logger.error(`Введено 0 приватных ключей от EVM`, undefined, 'Starkgate')
+        }
+
         for(let [i, ethPrivate] of ethPrivates.entries()) {
             const wallet = new ethers.Wallet(ethPrivate, ethProvider)
             const {account, privateKey} = await myAccounts.getAccount(privates[i])
+            
+            await waitForGas(account, config)
 
             const l2Address = account.address
-            await task_starkgate(wallet, l2Address, account.address, config)
+            const value = ethers.parseEther(config.starkgate_amount) + starknetFee
+            const amount = ethers.parseEther(config.starkgate_amount).toString()
+            await task_starkgate(wallet, l2Address, value.toString(), amount, gasPrice!)
+            await sleep(config)
         }
+
+        return
     }
 
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
@@ -143,6 +170,7 @@ async function main() {
                 logger.error(e)
             }
         })()
+        await sleep(config)
     }
 }
 

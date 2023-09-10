@@ -12,7 +12,6 @@ export class Myswap extends Dex {
     
     private contractAddress: string = "0x010884171baf1914edc28d7afb619b40a4051cfae78a094a55d230f19e944a28"
     private ABI: any[] = contractABI
-    private taskName = 'MySwap'
 
     private getPoolId(tokenFrom: Token, tokenTo: Token) {
         if(tokenFrom.ticker === "ETH") {

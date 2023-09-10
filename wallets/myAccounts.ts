@@ -11,7 +11,7 @@ export class MyAccounts {
     async deploy(account: Account, privateKey: string) {
         try {
             const txHash = await deployBraavosAccount(privateKey, this.provider!)
-            logger.success(`Задеплоен аккаунт tx:${txHash.transaction_hash}`, account.address)
+            logger.success(`Задеплоен аккаунт tx: ${txHash.transaction_hash}`, account.address)
         } catch(e: any) {
             if(e.errorCode) {
                 if(e.errorCode === "StarknetErrorCode.INSUFFICIENT_ACCOUNT_BALANCE") {

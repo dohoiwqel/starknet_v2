@@ -4,15 +4,11 @@ import { getEthPrice } from "./dex/oracles/oracle"
 import { ethers } from "ethers"
 import { logger } from "../logger/logger"
 import { Token, Tokens } from "./tokens/tokens"
+import { Protocol } from "./protocol"
 
-export class Dex {
+export class Dex extends Protocol{
 
-    protected account: Account
     protected tokens: Tokens = new Tokens()
-
-    constructor(account: Account) {
-        this.account = account
-    }
 
     async getBalanceOf(account: Account, token: Token): Promise<bigint> {
         const contractAddress = token.contractAddress
@@ -46,16 +42,6 @@ export class Dex {
     getTokenTo(tokenFrom: Token) {
         const tokens = this.tokens.getIterator()
         return tokenFrom.contractAddress === tokens[0].contractAddress? tokens[1]: tokens[0]
-    }
-
-    async waitForTransaction(tx: string) {
-        try {
-            const provider = new SequencerProvider({ baseUrl: constants.BaseUrl.SN_MAIN })
-            const res = await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
-            return true
-        } catch(e: any) {
-            return false
-        }
     }
 }
 

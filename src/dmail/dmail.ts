@@ -2,12 +2,9 @@ import { Account, Contract, Provider, SequencerProvider, TransactionStatus, cons
 import { encoder } from "./encoder";
 import { ABI } from './ABI'
 import { logger } from "../../logger/logger";
+import { Protocol } from "../protocol";
 
-export class Dmail {
-
-    private taskName = 'DMail'
-
-    constructor(private account: Account) {} 
+export class Dmail extends Protocol {
 
     private generateRandomWord(length: number) {
         const alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -24,16 +21,6 @@ export class Dmail {
     private getRandomInteger(data: number[]) {
         const [min, max] = data
         return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    private async waitForTransaction(tx: string) {
-        try {
-            const provider = new SequencerProvider({ baseUrl: constants.BaseUrl.SN_MAIN })
-            await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
-            return true
-        } catch(e: any) {
-            throw logger.error(e.response || e.error || e, this.account.address, this.taskName)
-        }
     }
 
     async sendMail(count: number) {
@@ -58,7 +45,7 @@ export class Dmail {
                 }
                 
             } catch(e) {
-                throw logger.error(`Не удалось отправить письмо`, this.account.address, this.taskName)
+                throw logger.error(`Не удалось отправить письмо ${e}`, this.account.address, this.taskName)
             }
         }
 

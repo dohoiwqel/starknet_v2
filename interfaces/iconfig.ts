@@ -18,4 +18,5 @@ export interface Iconfig {
     "starkgate": boolean,
     "starkgate_amount": string,
     "starkgate_show_fee": boolean,
+    "upgrade": boolean,
 }

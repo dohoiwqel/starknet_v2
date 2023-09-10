@@ -1,19 +1,21 @@
 {
-    "batch_create": true,
+    "batch_create": false,
     "batch_create_number": 30,
 
-    "starkgate": true,
-    "starkgate_amount": "0.0006",
-    "starkgate_show_fee": true,
+    "starkgate": false,
+    "starkgate_amount": "0.0077",
+    "starkgate_show_fee": false,
 
-    "jediSwap": true,
-    "l0kSwap": true,
-    "mySwap": true,
+    "upgrade": true,
+
+    "jediSwap": false,
+    "l0kSwap": false,
+    "mySwap": false,
     "stableSwap": true,
     "stable_amount_to_swap": 0,
     "slippage": 1,
 
-    "dmail": true,
+    "dmail": false,
     "Dmail_mails_count": 2,
 
     "jediSwap_liq": false,
@@ -22,5 +24,5 @@
 
     "minGasPrice": 100,
     "sleep_min": 5,
-    "sleep_max": 10
+    "sleep_max": 20
 }

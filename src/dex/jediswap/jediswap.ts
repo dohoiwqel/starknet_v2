@@ -13,7 +13,6 @@ export class Jediswap extends l0_or_jediSWAP {
 
     private contractAddress: string = "0x041fd22b238fa21cfcf5dd45a8548974d8263b3a531a60388411c5e230f97023"
     private ABI: any[] = contractABI
-    private taskName = 'jediSwap'
 
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
