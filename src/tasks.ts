@@ -9,7 +9,7 @@ import { Jediswap } from "./dex/jediswap/jediswap";
 import { logger } from "../logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
-import { Starkgate } from "./Starkgate/Starkgate";
+import { Starkgate } from "./starkgate/starkgate";
 import { UpgradeImplementation } from "./Upgrade/upgrade";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>  

@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate, task_upgrade_implementation } from "./src/tasks";
-import { Starkgate } from "./src/Starkgate/Starkgate";
+import { Starkgate } from "./src/starkgate/starkgate";
 
 async function waitForGas(account: Account, config: Iconfig) {
     let gasPrice: number

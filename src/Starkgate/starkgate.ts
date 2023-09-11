@@ -1,6 +1,4 @@
 import { TransactionResponse, ethers } from "ethers";
-import { Account, Contract } from "starknet";
-import { Dex } from "../dex";
 import { ABI } from './contractABI'
 import { logger } from "../../logger/logger";
 import axios from 'axios'
