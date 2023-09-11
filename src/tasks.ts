@@ -10,7 +10,7 @@ import { logger } from "../logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
 import { Starkgate } from "./Starkgate/starkgate";
-import { UpgradeImplementation } from "./upgrade/upgrade";
+import { UpgradeImplementation } from "./Upgrade/upgrade";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>  
 
