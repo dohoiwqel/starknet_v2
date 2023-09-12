@@ -4,7 +4,7 @@ import { logger } from "../logger/logger";
 export class Protocol {
 
     protected account: Account
-    protected taskName: string
+    public taskName: string
 
     constructor(account: Account, taskName: string) {
         this.account = account

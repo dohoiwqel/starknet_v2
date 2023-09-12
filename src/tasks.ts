@@ -42,8 +42,18 @@ export async function task_mySwap(account: Account, config: Iconfig) {
         const tokenTo = mySwap.getTokenTo(eToken)
         const slippage = makeDenominator(config.slippage)
 
+        if(ethToTrade < 0n) {
+            await mySwap.refuelETH(config.slippage)
+            return
+        }
+
         const executionFee = await mySwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
         ethToTrade -= executionFee.suggestedMaxFee!
+
+        if(ethToTrade < 0n) {
+            await mySwap.refuelETH(config.slippage)
+            return
+        }
 
         await mySwap.swap(ethToTrade, eToken, tokenTo, slippage)
         return
@@ -78,9 +88,19 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
         const tokenTo = l0kSwap.getTokenTo(eToken)
         const slippage = makeDenominator(config.slippage)
 
+        if(ethToTrade < 0n) {
+            await l0kSwap.refuelETH(config.slippage)
+            return
+        }
+
         const executionFee = await l0kSwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
         ethToTrade -= executionFee.suggestedMaxFee!
 
+        if(ethToTrade < 0n) {
+            await l0kSwap.refuelETH(config.slippage)
+            return
+        }
+        
         await l0kSwap.swap(ethToTrade, eToken, tokenTo, slippage)
         return
     }
@@ -88,7 +108,7 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
 
 export async function task_jediSwap(account: Account, config: Iconfig) {
 
-    const jediSwap = new Jediswap(account, "jediSwap_liq")
+    const jediSwap = new Jediswap(account, "jediSwap")
     const finder = new Finder(account)
 
     if(config.stableSwap) {
@@ -114,8 +134,18 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
         const tokenTo = jediSwap.getTokenTo(eToken)
         const slippage = makeDenominator(config.slippage)
 
+        if(ethToTrade < 0n) {
+            await jediSwap.refuelETH(config.slippage)
+            return
+        }
+
         const executionFee = await jediSwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
         ethToTrade -= executionFee.suggestedMaxFee!
+
+        if(ethToTrade < 0n) {
+            await jediSwap.refuelETH(config.slippage)
+            return
+        }
 
         await jediSwap.swap(ethToTrade, eToken, tokenTo, slippage)
         return
@@ -123,7 +153,7 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
 }
 
 export async function task_jediSwap_liq(account: Account, config: Iconfig) {
-    const jediSwap = new Jediswap(account, "jediSwap")
+    const jediSwap = new Jediswap(account, "jediSwap_liq")
 
     const LIQ_FROM = config.jediSwap_liq_amount[0]
     const LIQ_TO = config.jediSwap_liq_amount[1]

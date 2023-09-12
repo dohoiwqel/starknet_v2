@@ -8,5 +8,5 @@ export async function getEthPrice() {
     const oracleABI = ABI
     const oracle = new ethers.Contract(oracleAddress, oracleABI, provider)
     const weiPrice = await oracle.latestAnswer()
-    return Math.round(Number(ethers.formatUnits(weiPrice.toString(), '8').toString()))
+    return Math.round(Number(ethers.formatUnits(weiPrice.toString(), 8).toString()))
 }

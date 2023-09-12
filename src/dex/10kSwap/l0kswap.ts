@@ -1,9 +1,10 @@
 import { Contract, uint256 } from "starknet";
 import { contractABI } from './contractABI';
-import { denomNumber } from '../../denominator';
+import { denomNumber, makeDenominator } from '../../denominator';
 import { Dex, l0_or_jediSWAP } from '../../dex';
 import { logger } from "../../../logger/logger";
 import { Token } from "../../tokens/tokens";
+import { Iconfig } from "../../../interfaces/iconfig";
 
 export class L0kswap extends l0_or_jediSWAP {
 
@@ -12,7 +13,7 @@ export class L0kswap extends l0_or_jediSWAP {
 
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
-        
+
         if(amountIn > allowance) {
             await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
         }
@@ -42,7 +43,7 @@ export class L0kswap extends l0_or_jediSWAP {
 
     async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
         const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
-        
+
         if(amountIn > allowance) {
             await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
         }
@@ -61,7 +62,16 @@ export class L0kswap extends l0_or_jediSWAP {
         ]
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-        
+
         return await contract.estimate('swapExactTokensForTokens', callData)
+    }
+
+    async refuelETH(slippage: number) {
+        logger.info('На балансе недостаточно эфира для обмена. Пытаемся обменять стейблы в эфир...', this.account.address, this.taskName)
+        let {token, balance} = await this.finder.getHighestBalanceToken()
+        let {eToken, eBalance} = await this.finder.getEth()
+        const _slippage = makeDenominator(slippage)
+        await this.swap(balance, token, eToken, _slippage)
+        return
     }
 }

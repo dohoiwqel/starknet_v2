@@ -5,10 +5,12 @@ import { ethers } from "ethers"
 import { logger } from "../logger/logger"
 import { Token, Tokens } from "./tokens/tokens"
 import { Protocol } from "./protocol"
+import { Finder } from "./finder"
 
 export class Dex extends Protocol{
 
     protected tokens: Tokens = new Tokens()
+    protected finder = new Finder(this.account)
 
     async getBalanceOf(account: Account, token: Token): Promise<bigint> {
         const contractAddress = token.contractAddress

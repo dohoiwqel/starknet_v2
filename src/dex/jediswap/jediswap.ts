@@ -113,6 +113,7 @@ export class Jediswap extends l0_or_jediSWAP {
     }
 
     private async checkAddLiquidity(depositValue: number, slippage: denomNumber) {
+        
         //Проверки на наличие достоточного количество USDT USDC
         const usdtBalance = await this.getBalanceOf(this.account, this.tokens.USDT)
         const usdcBalance = await this.getBalanceOf(this.account, this.tokens.USDC)
@@ -121,8 +122,23 @@ export class Jediswap extends l0_or_jediSWAP {
         const ethPrice = BigInt(await getEthPrice())
         
         const ethUSDBalance = ethBalance * ethPrice
-        const formatethUSDBalance = BigInt(Math.floor(parseInt(ethers.formatUnits(ethUSDBalance, 12))))
+        const formatEthUSDBalance = BigInt(Math.floor(parseInt(ethers.formatUnits(ethUSDBalance, 12))))
         const formatDepositValue = BigInt(ethers.parseUnits(depositValue.toString(), 6).toString())
+
+        if(formatDepositValue > usdtBalance && formatDepositValue > usdcBalance) {
+            console.log(formatDepositValue)
+            logger.info(`Обмениваем eth на usdt и usdc`, this.account.address, this.taskName)
+            console.log(formatEthUSDBalance, 'формат ethUSDBalance')
+            
+            const needToSwapUSD = formatDepositValue
+            const needToSwapEth = needToSwapUSD / ethPrice
+            const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
+
+            await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
+            await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
+            
+            return
+        }
 
         if(usdtBalance < formatDepositValue) {
 
@@ -134,8 +150,8 @@ export class Jediswap extends l0_or_jediSWAP {
                 return
             }
 
-            if(formatethUSDBalance > formatDepositValue) {
-                // const needToSwapUSD = formatethUSDBalance - formatDepositValue
+            if(formatEthUSDBalance > formatDepositValue) {
+                // const needToSwapUSD = formatEthUSDBalance - formatDepositValue
                 const needToSwapEth = needToSwapUSD / ethPrice
                 const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
@@ -154,7 +170,7 @@ export class Jediswap extends l0_or_jediSWAP {
                 return
             }
 
-            if(formatethUSDBalance > formatDepositValue) {
+            if(formatEthUSDBalance > formatDepositValue) {
                 const needToSwapEth = needToSwapUSD / ethPrice
                 const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
@@ -166,16 +182,19 @@ export class Jediswap extends l0_or_jediSWAP {
     }
 
     async addLiquidity(number: number, slippage: number) {
-         
+        
+        console.log(number)
         await this.checkAddLiquidity(number, makeDenominator(slippage))
 
         const ratio = await this.getRatio()
 
-        console.log(`DEV: 1 USDT === ${ethers.formatUnits(ratio, 6)} USDC`)
+        // console.log(`DEV: 1 USDT === ${ethers.formatUnits(ratio, 6)} USDC`)
 
         const amountA = BigInt(ethers.parseUnits(number.toString(), this.tokens.USDT.decimals).toString())
         const amountB = amountA * ratio / 1_000_000n
         const deadline = String(Math.round(Date.now() / 1000 + 3600));
+        // console.log(amountA, amountB)
+        return
 
         const callData = [
             this.tokens.USDT.contractAddress,
@@ -196,5 +215,14 @@ export class Jediswap extends l0_or_jediSWAP {
         } else {
             logger.error(`Не удалось залить ликвидность в Jediswap ${receipt.transaction_hash}`, this.account.address, this.taskName)
         }
+    }
+
+    async refuelETH(slippage: number) {
+        logger.info('На балансе недостаточно эфира для обмена. Пытаемся обменять стейблы в эфир...', this.account.address, this.taskName)
+        let {token, balance} = await this.finder.getHighestBalanceToken()
+        let {eToken, eBalance} = await this.finder.getEth()
+        const _slippage = makeDenominator(slippage)
+        await this.swap(balance, token, eToken, _slippage)
+        return
     }
 }

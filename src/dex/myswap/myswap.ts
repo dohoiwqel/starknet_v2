@@ -141,14 +141,16 @@ export class Myswap extends Dex {
             uint256.bnToUint256(minAmountOut),
         ]
 
-        console.log([
-            poolId, 
-            tokenFrom.contractAddress,
-            ethers.formatEther(amountIn.toString()),
-            ethers.formatUnits(minAmountOut.toString(), 6),
-        ])
-
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
         return await contract.estimate('swap', callData)
+    }
+
+    async refuelETH(slippage: number) {
+        logger.info('На балансе недостаточно эфира для обмена. Пытаемся обменять стейблы в эфир...', this.account.address, this.taskName)
+        let {token, balance} = await this.finder.getHighestBalanceToken()
+        let {eToken, eBalance} = await this.finder.getEth()
+        const _slippage = makeDenominator(slippage)
+        await this.swap(balance, token, eToken, _slippage)
+        return
     }
 }

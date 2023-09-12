@@ -28,8 +28,6 @@ async function waitForGas(account: Account) {
     return
 }
 
-
-
 function getTasks(config: Iconfig) {
     let tasks = new Array<Task>
     let protocols = new Array<Task>
@@ -81,7 +79,10 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
             await task(account, config)
             await sleep(config.sleep[0], config.sleep[1])
         } catch(e) {
-            logger.error(e, account.address, task.name)
+            if(e !== undefined) {
+                logger.error(e, account.address, task.name)
+                console.log(e)
+            }
         }
     }
 }
