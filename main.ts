@@ -8,8 +8,10 @@ import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate, task_upgrade_implementation } from "./src/tasks";
 import { Starkgate } from "./src/Starkgate/starkgate";
+import { config } from "./cfg";
+import { getRandomElementFromArray, getRandomInt, read, sleep } from "./utils/utils";
 
-async function waitForGas(account: Account, config: Iconfig) {
+async function waitForGas(account: Account) {
     let gasPrice: number
     while(true) {
         const block = await account.getBlock("latest")
@@ -26,26 +28,23 @@ async function waitForGas(account: Account, config: Iconfig) {
     return
 }
 
-async function read(fileName: string): Promise<string[]> {
-    const array: string[] = []
-    const readInterface = readline.createInterface({
-        input: fs.createReadStream(fileName),
-        crlfDelay: Infinity,
-    })
-    for await (const line of readInterface) {
-        array.push(line)
-    }
-    return array
-}
+
 
 function getTasks(config: Iconfig) {
     let tasks = new Array<Task>
-    
-    if(config.jediSwap) tasks.push(task_jediSwap);
+    let protocols = new Array<Task>
+
+    if(config.jediSwap) protocols.push(task_jediSwap);
+    if(config.l0kswap) protocols.push(task_10kSwap);
+    if(config.mySwap) protocols.push(task_mySwap);
+    if(config.dmail) protocols.push(task_dmail);
+
+    const maxProtocolsCount = config.protocols[1] > protocols.length? protocols.length: config.protocols[1]
+    const minProtocolsCount = config.protocols[0] > maxProtocolsCount? maxProtocolsCount: config.protocols[0]
+    const protocolsCount = getRandomInt(minProtocolsCount, maxProtocolsCount)
+    getRandomElementFromArray(protocols, protocolsCount, tasks)
+
     if(config.jediSwap_liq) tasks.push(task_jediSwap_liq);
-    if(config.l0kswap) tasks.push(task_10kSwap);
-    if(config.mySwap) tasks.push(task_mySwap);
-    if(config.dmail) tasks.push(task_dmail);
     if(config.upgrade) tasks.push(task_upgrade_implementation);
 
     return tasks
@@ -67,18 +66,6 @@ function showTasks(tasks: Array<Task>, accountAddress: string) {
     logger.info(`Путь для кошелька ${accountAddress} [${names.join(" -> ")}]`)
 }
 
-function getRandomInt(min: number, max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-}
-
-function sleep(config: Iconfig) {
-    const seconds = getRandomInt(config.sleep_min, config.sleep_max) 
-    // console.log(`Спим ${seconds} секунд`)
-    return new Promise(resolve => setTimeout(() => resolve(''), seconds*1000))
-}
-
 async function batchCreate(config: Iconfig) {
     logger.info(`Создаем ${config.batch_create_number} аккаунтов старкнет`)
     const myAccounts = new MyAccounts()
@@ -90,18 +77,16 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
     
     for(let task of tasks) {
         try {
-            await waitForGas(account, config)
+            await waitForGas(account)
             await task(account, config)
-            await sleep(config)
+            await sleep(config.sleep[0], config.sleep[1])
         } catch(e) {
             logger.error(e, account.address, task.name)
         }
     }
-
 }
 
 async function main() {
-    const config: Iconfig = JSON.parse(fs.readFileSync(path.join(__dirname, "./config.json"), {encoding: "utf8", flag: "r",}))
     const privates = await read('privates.txt')
 
     const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
@@ -109,6 +94,20 @@ async function main() {
     if(config.batch_create) {
         await batchCreate(config)
         return
+    }
+
+    if(config.starkgate_show_fee) {
+        const starkgate = new Starkgate()
+        const starknetFee = await starkgate.getStarknetFee()
+        const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
+        const gasPrice = (await ethProvider.getFeeData()).gasPrice
+
+        const gas = 125_000n
+        const executionFee = gas * gasPrice!
+        const value = ethers.parseEther(config.starkgate_amount)
+
+        const total = ethers.formatEther((executionFee + value + starknetFee).toString().split('.')[0]) 
+        logger.info(`Для бриджа нужно минимум ${total}`, undefined, 'Strakgate')
     }
 
     if(config.starkgate) {
@@ -120,16 +119,6 @@ async function main() {
         const gasPrice = (await ethProvider.getFeeData()).gasPrice
         const starknetFee = await starkgate.getStarknetFee()
 
-        if(config.starkgate_show_fee) {
-            const gas = 125_000n
-            const executionFee = gas * gasPrice!
-            const value = ethers.parseEther(config.starkgate_amount)
-
-            const total = ethers.formatEther((executionFee + value + starknetFee).toString().split('.')[0]) 
-            logger.info(`Для бриджа нужно минимум ${total}`, undefined, 'Strakgate')
-            return
-        }
-
         if(ethPrivates.length === 0) {
             throw logger.error(`Введено 0 приватных ключей от EVM`, undefined, 'Starkgate')
         }
@@ -138,13 +127,13 @@ async function main() {
             const wallet = new ethers.Wallet(ethPrivate, ethProvider)
             const {account, privateKey} = await myAccounts.getAccount(privates[i])
             
-            await waitForGas(account, config)
+            await waitForGas(account)
 
             const l2Address = account.address
             const value = ethers.parseEther(config.starkgate_amount) + starknetFee
             const amount = ethers.parseEther(config.starkgate_amount).toString()
             await task_starkgate(wallet, l2Address, value.toString(), amount, gasPrice!)
-            await sleep(config)
+            await sleep(config.sleep[0], config.sleep[1])
         }
 
         return
@@ -152,9 +141,9 @@ async function main() {
 
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
 
-    const tasks = getTasks(config)
 
     for(let [i, privateKeyORmnemonic] of privates.entries()) {
+        const tasks = getTasks(config);
         (async () => {
             try {
                 const myAccounts = new MyAccounts(provider)
@@ -170,7 +159,7 @@ async function main() {
                 logger.error(e)
             }
         })()
-        await sleep(config)
+        await sleep(config.sleep[0], config.sleep[1])
     }
 }
 

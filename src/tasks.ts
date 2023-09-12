@@ -11,6 +11,7 @@ import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
 import { Starkgate } from "./Starkgate/starkgate";
 import { UpgradeImplementation } from "./Upgrade/upgrade";
+import { getRandomInt } from "../utils/utils";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>  
 
@@ -59,8 +60,9 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
         //Поиск стейблкоина с максимальным балансом
         let {token, balance} = await finder.getHighestBalanceToken()
 
-        if(config.stable_amount_to_swap > 0) {
-            balance = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
+        if(config.stableSwap_full_balance === false) {
+            const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
+            balance = ethers.parseUnits(stableAmount.toString(), token.decimals)
         }
 
         const slippage = makeDenominator(config.slippage)
@@ -94,8 +96,9 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
         //Поиск стейблкоина с максимальным балансом
         let {token, balance} = await finder.getHighestBalanceToken()
 
-        if(config.stable_amount_to_swap > 0) {
-            balance = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
+        if(config.stableSwap_full_balance === false) {
+            const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
+            balance = ethers.parseUnits(stableAmount.toString(), token.decimals)
         }
 
         const slippage = makeDenominator(config.slippage)
@@ -122,11 +125,14 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
 export async function task_jediSwap_liq(account: Account, config: Iconfig) {
     const jediSwap = new Jediswap(account, "jediSwap")
 
-    if(config.LIQ_FROM > config.LIQ_TO) {
+    const LIQ_FROM = config.jediSwap_liq_amount[0]
+    const LIQ_TO = config.jediSwap_liq_amount[1]
+
+    if(LIQ_FROM > LIQ_TO) {
         throw new Error("LIQ_TO должны быть больше чем LIQ_FROM")
     }
 
-    const depositValue = getRandomNumber(config.LIQ_TO, config.LIQ_FROM) / 2
+    const depositValue = getRandomNumber(LIQ_TO, LIQ_FROM) / 2
     await jediSwap.addLiquidity(depositValue, config.slippage)
 }
 
