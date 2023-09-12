@@ -137,12 +137,14 @@ export async function task_jediSwap_liq(account: Account, config: Iconfig) {
 }
 
 export async function task_dmail(account: Account, config: Iconfig) {
-    if(config.Dmail_mails_count < 0) {
+    if(config.Dmail_mails_count[1] <= 0) {
         logger.error(`Выбран модуль dmail. Количество dmail_mails_count должно быть больше 0`)
     }
 
+    const randomMailsNumber = getRandomInt(config.Dmail_mails_count[0], config.Dmail_mails_count[1])
+
     const dmail = new Dmail(account, "Dmail")
-    await dmail.sendMail(config.Dmail_mails_count)
+    await dmail.sendMail(randomMailsNumber)
 }
 
 export async function task_starkgate(account: ethers.Wallet, l2Address: string, value: string, amount: string, gasPrice: bigint) {

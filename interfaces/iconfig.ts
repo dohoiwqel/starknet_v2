@@ -8,7 +8,7 @@ export interface Iconfig {
     stable_amount_to_swap: number[], 
     slippage: number,
     minGasPrice: number,
-    Dmail_mails_count: number,
+    Dmail_mails_count: number[],
     batch_create: boolean,
     batch_create_number: number,
     starkgate: boolean,

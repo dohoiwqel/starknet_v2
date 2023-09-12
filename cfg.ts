@@ -40,5 +40,5 @@ export const config: Iconfig = {
 
     /* Письма Dmail */
     dmail: true, 
-    Dmail_mails_count: 2,
+    Dmail_mails_count: [1, 10],
 }
