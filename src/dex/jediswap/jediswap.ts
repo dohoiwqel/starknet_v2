@@ -1,4 +1,4 @@
-import { Account, CallData, Contract, Provider, ProviderInterface, provider, uint256 } from 'starknet'
+import { Account, CallData, Contract, Provider, ProviderInterface, num, provider, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { BigNumberish } from 'starknet';
 import { ethers } from 'ethers';
@@ -126,13 +126,16 @@ export class Jediswap extends l0_or_jediSWAP {
         const formatDepositValue = BigInt(ethers.parseUnits(depositValue.toString(), 6).toString())
 
         if(formatDepositValue > usdtBalance && formatDepositValue > usdcBalance) {
-            console.log(formatDepositValue)
             logger.info(`Обмениваем eth на usdt и usdc`, this.account.address, this.taskName)
             console.log(formatEthUSDBalance, 'формат ethUSDBalance')
             
             const needToSwapUSD = formatDepositValue
             const needToSwapEth = needToSwapUSD / ethPrice
-            const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
+            
+            //Прибавляем несколько процентов из-за разности в цене оракла и пулом
+            let formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
+            let percent = formatNeedToSwapEth * 10n/100n
+            formatNeedToSwapEth += percent
 
             await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
             await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
@@ -144,7 +147,7 @@ export class Jediswap extends l0_or_jediSWAP {
 
             const needToSwapUSD = formatDepositValue - usdtBalance
             
-            if(usdcBalance > formatDepositValue) {
+            if(usdcBalance > formatDepositValue && needToSwapUSD > 0n) {
                 // const needToSwap = usdcBalance - formatDepositValue
                 await this.swap(needToSwapUSD, this.tokens.USDC, this.tokens.USDT, slippage)
                 return
@@ -165,7 +168,7 @@ export class Jediswap extends l0_or_jediSWAP {
 
             const needToSwapUSD = formatDepositValue - usdcBalance
             
-            if(usdtBalance > formatDepositValue) {
+            if(usdtBalance > formatDepositValue && needToSwapUSD > 0n) {
                 await this.swap(needToSwapUSD, this.tokens.USDT, this.tokens.USDC, slippage)
                 return
             }
@@ -182,19 +185,17 @@ export class Jediswap extends l0_or_jediSWAP {
     }
 
     async addLiquidity(number: number, slippage: number) {
-        
         console.log(number)
         await this.checkAddLiquidity(number, makeDenominator(slippage))
 
         const ratio = await this.getRatio()
 
-        // console.log(`DEV: 1 USDT === ${ethers.formatUnits(ratio, 6)} USDC`)
-
         const amountA = BigInt(ethers.parseUnits(number.toString(), this.tokens.USDT.decimals).toString())
         const amountB = amountA * ratio / 1_000_000n
         const deadline = String(Math.round(Date.now() / 1000 + 3600));
-        // console.log(amountA, amountB)
-        return
+
+        await this.approve(this.account, this.tokens.USDT, uint256.bnToUint256(amountA), this.contractAddress, this.taskName)
+        await this.approve(this.account, this.tokens.USDC, uint256.bnToUint256(amountB), this.contractAddress, this.taskName)
 
         const callData = [
             this.tokens.USDT.contractAddress,
@@ -206,6 +207,17 @@ export class Jediswap extends l0_or_jediSWAP {
             this.account.address,
             deadline
         ]
+
+        console.log([
+            this.tokens.USDT.contractAddress,
+            this.tokens.USDC.contractAddress,
+            amountA,
+            amountB,
+            amountA * 995n/1000n,
+            amountB * 995n/1000n,
+            this.account.address,
+            deadline
+        ])
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account)
         const receipt = await contract.invoke("add_liquidity", callData)  
