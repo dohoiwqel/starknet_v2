@@ -67,6 +67,7 @@ export class l0_or_jediSWAP extends Dex {
             const formatUSDAmount = BigInt(ethers.formatUnits(usdAmount, tokenFrom.decimals - tokenTo.decimals).split('.')[0])
             const percent = (formatUSDAmount * BigInt(slippage.nominator)) / BigInt(100 * slippage.denominator)
             const result = formatUSDAmount - percent
+            console.log(result)
             return result
         }
 

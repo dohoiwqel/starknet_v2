@@ -34,9 +34,16 @@ export class Jediswap extends l0_or_jediSWAP {
             deadline
         ]
 
+        console.log([
+            amountIn, 
+            amountOut,
+            path,
+            to,
+            deadline
+        ], 'НА СВАПЕ')
+
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
         const receipt = await contract.invoke("swap_exact_tokens_for_tokens", callData)  
-
 
         if(await this.waitForTransaction(receipt.transaction_hash)) {
             logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
