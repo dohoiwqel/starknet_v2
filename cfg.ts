@@ -20,7 +20,7 @@ export const config: Iconfig = {
     upgrade: false,
 
     /* Предоставление ликвидности в jediSwap */
-    jediSwap_liq: true,
+    jediSwap_liq: false,
     jediSwap_liq_amount: [3, 3], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
     
     /*
@@ -29,14 +29,14 @@ export const config: Iconfig = {
         если указано [1, 2] или [1, 4] будет взято случайное число протоколов от 1 до 2 или от 1 до 3 соотвественно 
     */
     protocols: [4, 4], //Выбирает случайное количество протоколов [ОТ, ДО] из включенных НИЖЕ.
-    jediSwap: false,
+    jediSwap: true,
     l0kswap: false,
     mySwap: false,
     dmail: false, 
 
     slippage: 1, //Проскальзывание в процентах 1 = 1%
 
-    stableSwap: false, //Если включено обменивает ТОЛЬКО стейблы иначе обменивает ETH на стейбл
+    stableSwap: true, //Если включено обменивает ТОЛЬКО стейблы иначе обменивает ETH на стейбл
     stableSwap_full_balance: true, //Если включено обменивает весь доступный баланс стейблов
     stable_amount_to_swap: [100, 200], //Выбирает случайно количество стейблов для свапа [ОТ, ДО]
 

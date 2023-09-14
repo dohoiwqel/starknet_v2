@@ -28,7 +28,8 @@ export class Protocol {
             return await this.waitForTransaction(receipt.transaction_hash)
 
         } catch(e: any) {
-            if(e.message.includes('nonce must be')) {
+            if(e.message && e.message.includes('Invalid transaction nonce')) {
+                console.log('DEV: Ошибка с nonce')
                 return await this.sendTransaction(contract, account, functionName, callData)
             }
 

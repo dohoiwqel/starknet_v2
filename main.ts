@@ -147,7 +147,7 @@ async function main() {
                 const myAccounts = new MyAccounts(provider)
                 const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
                 await myAccounts.checkDeploy(account, privateKey)
-                
+
                 const shuffledTasks = shuffleTask(tasks)
                 showTasks(shuffledTasks, account.address)
 
