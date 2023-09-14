@@ -141,7 +141,7 @@ export class Jediswap extends l0_or_jediSWAP {
             
             //Прибавляем несколько процентов из-за разности в цене оракла и пулом
             let formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
-            let percent = formatNeedToSwapEth * 10n/100n
+            let percent = formatNeedToSwapEth * 20n/100n
             formatNeedToSwapEth += percent
 
             await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
@@ -152,7 +152,9 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(usdtBalance < formatDepositValue) {
 
-            const needToSwapUSD = formatDepositValue - usdtBalance
+            let needToSwapUSD = formatDepositValue - usdtBalance
+            let percent = needToSwapUSD * 20n/100n
+            needToSwapUSD += percent
             
             if(usdcBalance > formatDepositValue && needToSwapUSD > 0n) {
                 // const needToSwap = usdcBalance - formatDepositValue
@@ -173,7 +175,9 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(usdcBalance < formatDepositValue) {
 
-            const needToSwapUSD = formatDepositValue - usdcBalance
+            let needToSwapUSD = formatDepositValue - usdcBalance
+            let percent = needToSwapUSD * 20n/100n
+            needToSwapUSD += percent
             
             if(usdtBalance > formatDepositValue && needToSwapUSD > 0n) {
                 await this.swap(needToSwapUSD, this.tokens.USDT, this.tokens.USDC, slippage)

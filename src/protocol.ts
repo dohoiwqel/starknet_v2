@@ -14,7 +14,8 @@ export class Protocol {
     protected async waitForTransaction(tx: string) {
         try {
             const provider = new SequencerProvider({ baseUrl: constants.BaseUrl.SN_MAIN })
-            return await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
+            const response = await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
+            return response
         } catch(e: any) {
             throw (e.response || e.error || e)
         }
