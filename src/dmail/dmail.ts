@@ -37,15 +37,16 @@ export class Dmail extends Protocol {
             const email = encoder(`${this.generateRandomWord(mailLength)}@gmail.com`)
             const text = encoder(`${this.generateRandomWord(textLength)}`)
 
-            try {
-                const res = await contract.transaction(email, text)
+            const callData = [
+                email,
+                text
+            ]
 
-                if(await this.waitForTransaction(res.transaction_hash)) {
-                    logger.success(`Отправлено письмо ${res.transaction_hash}`, this.account.address, this.taskName)
-                }
-                
+            try {
+                const receipt = await this.sendTransaction(contract, this.account, "transaction", callData)
+                logger.success(`Отправлено письмо ${receipt.transaction_hash}`, this.account.address, this.taskName)
             } catch(e) {
-                throw logger.error(`Не удалось отправить письмо ${e}`, this.account.address, this.taskName)
+                logger.error(`Не удалось отправить письмо ${e}`, this.account.address, this.taskName)
             }
         }
 

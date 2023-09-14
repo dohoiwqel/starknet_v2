@@ -23,10 +23,16 @@ export async function task_mySwap(account: Account, config: Iconfig) {
     if(config.stableSwap) {
         //Поиск стейблкоина с максимальным балансом
         let {token, balance} = await finder.getHighestBalanceToken()
-        const formatStableAmount = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
 
-        if(formatStableAmount > 0n && formatStableAmount < balance) {
-            balance = ethers.parseUnits(config.stable_amount_to_swap.toString(), token.decimals)
+        if(config.stableSwap_full_balance === false) {
+            const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
+            const formatStableAmount = ethers.parseUnits(stableAmount.toString(), token.decimals)
+            
+            if(formatStableAmount > balance) {
+                logger.info(`Выбрано больше стейблов чем есть на  аккаунте. Обмениваем весь доступный баланс`, account.address, mySwap.taskName)
+            } else {
+                balance = formatStableAmount
+            }
         }
 
         const slippage = makeDenominator(config.slippage)

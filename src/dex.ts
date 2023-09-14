@@ -31,14 +31,20 @@ export class Dex extends Protocol{
     async approve(account: Account, token: Token, amount: uint256.Uint256, spender: string, task_name: string) {
         const contractAddress = token.contractAddress
         const ABI = token.ABI
-        const contract = new Contract(ABI, contractAddress)        
-        contract.connect(account)
-        const res = await contract.approve(spender, amount)
-        if(await this.waitForTransaction(res.transaction_hash)){
-            logger.success(`Выполнен аппрув ${res.transaction_hash}`, account.address, task_name)
-        } else {
-            logger.error(`Не удалось выполнить аппрув ${res.transaction_hash}`, account.address)
+        const contract = new Contract(ABI, contractAddress, account)        
+
+        const callData = [
+            spender,
+            amount
+        ]
+
+        try {
+            const receipt = await this.sendTransaction(contract, this.account, "approve", callData)
+            logger.success(`Выполнен аппрув ${receipt.transaction_hash}`, this.account.address, this.taskName)
+        } catch(e) {
+            logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
         }
+
     }
 
     getTokenTo(tokenFrom: Token) {

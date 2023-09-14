@@ -43,12 +43,12 @@ export class Jediswap extends l0_or_jediSWAP {
         ], 'НА СВАПЕ')
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-        const receipt = await contract.invoke("swap_exact_tokens_for_tokens", callData)  
 
-        if(await this.waitForTransaction(receipt.transaction_hash)) {
+        try {
+            const receipt = await this.sendTransaction(contract, this.account, 'swap_exact_tokens_for_tokens', callData)
             logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
-        } else {
-            logger.error(`Не удалось выполнить свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
+        } catch(e) {
+            logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
         }
     }
 
@@ -227,12 +227,12 @@ export class Jediswap extends l0_or_jediSWAP {
         ])
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account)
-        const receipt = await contract.invoke("add_liquidity", callData)  
-        
-        if(await this.waitForTransaction(receipt.transaction_hash)) {
+
+        try {
+            const receipt = await this.sendTransaction(contract, this.account, "add_liquidity", callData)
             logger.success(`Залили ликвидность в JediSwap ${receipt.transaction_hash}`, this.account.address, this.taskName)
-        } else {
-            logger.error(`Не удалось залить ликвидность в Jediswap ${receipt.transaction_hash}`, this.account.address, this.taskName)
+        } catch(e) {
+            logger.error(`Не удалось залить ликвидность в Jediswap ${e}`, this.account.address, this.taskName)
         }
     }
 

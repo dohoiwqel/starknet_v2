@@ -112,12 +112,12 @@ export class Myswap extends Dex {
         ]
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-        const receipt = await contract.invoke("swap", callData)  
 
-        if(await this.waitForTransaction(receipt.transaction_hash)){
+        try {
+            const receipt = await this.sendTransaction(contract, this.account, "swap", callData)
             logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
-        } else {
-            logger.error(`Не удалось выполнить свап на Myswap ${receipt.transaction_hash}`, this.account.address, this.taskName)
+        } catch(e) {
+            logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
         }
     }
 

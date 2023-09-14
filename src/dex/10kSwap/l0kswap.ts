@@ -32,12 +32,12 @@ export class L0kswap extends l0_or_jediSWAP {
         ]
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-        const receipt = await contract.invoke("swapExactTokensForTokens", callData)  
 
-        if(await this.waitForTransaction(receipt.transaction_hash)) {
-            logger.success(`Выполнен свап на 10kSwap ${receipt.transaction_hash}`, this.account.address, this.taskName)
-        } else {
-            logger.error(`Не удалось выполнить свап га 10kSwap ${receipt.transaction_hash}`, this.account.address, this.taskName)
+        try {
+            const receipt = await this.sendTransaction(contract, this.account, 'swapExactTokensForTokens', callData)
+            logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
+        } catch(e) {
+            logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
         }
     }
 

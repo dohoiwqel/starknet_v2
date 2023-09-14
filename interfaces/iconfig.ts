@@ -17,6 +17,8 @@ export interface Iconfig {
     upgrade: boolean,
     stableSwap_full_balance: boolean,
     jediSwap_liq_amount: number[],
-    sleep: number[],
+    sleep_protocols: number[],
+    sleep_account: number[],
     protocols: number[],
+    
 }

@@ -1,7 +1,4 @@
 import { Account, Provider, SequencerProvider, constants, stark } from "starknet";
-import readline from 'readline'
-import * as fs from 'fs'
-import path from 'path'
 import { Iconfig } from './interfaces/iconfig';
 import { ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
@@ -77,7 +74,7 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
         try {
             await waitForGas(account)
             await task(account, config)
-            await sleep(config.sleep[0], config.sleep[1])
+            await sleep(config.sleep_protocols[0], config.sleep_protocols[1])
         } catch(e) {
             if(e !== undefined) {
                 logger.error(e, account.address, task.name)
@@ -134,7 +131,7 @@ async function main() {
             const value = ethers.parseEther(config.starkgate_amount) + starknetFee
             const amount = ethers.parseEther(config.starkgate_amount).toString()
             await task_starkgate(wallet, l2Address, value.toString(), amount, gasPrice!)
-            await sleep(config.sleep[0], config.sleep[1])
+            await sleep(config.sleep_account[0], config.sleep_account[1])
         }
 
         return
@@ -160,7 +157,7 @@ async function main() {
                 logger.error(e)
             }
         })()
-        await sleep(config.sleep[0], config.sleep[1])
+        await sleep(config.sleep_account[0], config.sleep_account[1])
     }
 }
 
