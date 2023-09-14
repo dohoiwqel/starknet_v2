@@ -152,19 +152,22 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(usdtBalance < formatDepositValue) {
 
-            let needToSwapUSD = formatDepositValue - usdtBalance
-            let percent = needToSwapUSD * 20n/100n
-            needToSwapUSD += percent
+            let needToSwapUSDC = formatDepositValue - usdtBalance
+            let percent = needToSwapUSDC * 20n/100n
+            needToSwapUSDC += percent
             
-            if(usdcBalance > formatDepositValue && needToSwapUSD > 0n) {
-                // const needToSwap = usdcBalance - formatDepositValue
-                await this.swap(needToSwapUSD, this.tokens.USDC, this.tokens.USDT, slippage)
+            if(usdcBalance > formatDepositValue && needToSwapUSDC > 0n && needToSwapUSDC < usdcBalance) {
+                await this.swap(needToSwapUSDC, this.tokens.USDC, this.tokens.USDT, slippage)
                 return
             }
 
             if(formatEthUSDBalance > formatDepositValue) {
-                // const needToSwapUSD = formatEthUSDBalance - formatDepositValue
-                const needToSwapEth = needToSwapUSD / ethPrice
+                const needToSwapEth = needToSwapUSDC / ethPrice
+
+                if(ethBalance < needToSwapEth) {
+                    throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
+                }
+
                 const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
                 return
@@ -175,17 +178,22 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(usdcBalance < formatDepositValue) {
 
-            let needToSwapUSD = formatDepositValue - usdcBalance
-            let percent = needToSwapUSD * 20n/100n
-            needToSwapUSD += percent
+            let needToSwapUSDT = formatDepositValue - usdcBalance
+            let percent = needToSwapUSDT * 20n/100n
+            needToSwapUSDT += percent
             
-            if(usdtBalance > formatDepositValue && needToSwapUSD > 0n) {
-                await this.swap(needToSwapUSD, this.tokens.USDT, this.tokens.USDC, slippage)
+            if(usdtBalance > formatDepositValue && needToSwapUSDT > 0n && needToSwapUSDT < usdcBalance) {
+                await this.swap(needToSwapUSDT, this.tokens.USDT, this.tokens.USDC, slippage)
                 return
             }
 
             if(formatEthUSDBalance > formatDepositValue) {
-                const needToSwapEth = needToSwapUSD / ethPrice
+                const needToSwapEth = needToSwapUSDT / ethPrice
+                
+                if(ethBalance < needToSwapEth) {
+                    throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
+                }
+
                 const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
                 return
