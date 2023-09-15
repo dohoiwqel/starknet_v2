@@ -43,6 +43,7 @@ export class Dex extends Protocol{
             logger.success(`Выполнен аппрув ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
+            console.log(e)
         }
 
     }
