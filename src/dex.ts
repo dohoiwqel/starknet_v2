@@ -1,4 +1,4 @@
-import { Account, Contract, Provider, SequencerProvider, TransactionStatus, constants, uint256 } from "starknet"
+import { Account, Contract, HttpError, Provider, SequencerProvider, TransactionStatus, constants, uint256 } from "starknet"
 import { denomNumber } from "./denominator"
 import { getEthPrice } from "./dex/oracles/oracle"
 import { ethers } from "ethers"
@@ -6,6 +6,7 @@ import { logger } from "../logger/logger"
 import { Token, Tokens } from "./tokens/tokens"
 import { Protocol } from "./protocol"
 import { Finder } from "./finder"
+import { sleep } from "../utils/utils"
 
 export class Dex extends Protocol{
 
@@ -28,7 +29,7 @@ export class Dex extends Protocol{
         return uint256.uint256ToBN(allowance.remaining)
     }
 
-    async approve(account: Account, token: Token, amount: uint256.Uint256, spender: string, task_name: string) {
+    async approve(account: Account, token: Token, amount: uint256.Uint256, spender: string, task_name: string): Promise<void> {
         const contractAddress = token.contractAddress
         const ABI = token.ABI
         const contract = new Contract(ABI, contractAddress, account)        
@@ -44,6 +45,10 @@ export class Dex extends Protocol{
         } catch(e) {
             logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
             console.log(e)
+            if(e instanceof HttpError) {
+                await sleep(5, 10)
+                return await this.approve(account, token, amount, spender, task_name)
+            }
         }
 
     }
