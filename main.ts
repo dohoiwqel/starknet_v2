@@ -1,4 +1,4 @@
-import { Account, Provider, SequencerProvider, constants, stark } from "starknet";
+import { Account, HttpError, Provider, SequencerProvider, constants, stark } from "starknet";
 import { Iconfig } from './interfaces/iconfig';
 import { ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
@@ -68,12 +68,26 @@ async function batchCreate(config: Iconfig) {
     return
 }
 
+async function runTask(task: Task, account: Account, config: Iconfig): Promise<void> {
+    try {
+        await task(account, config)
+    } catch(e: any) {
+        console.log(e)
+        if(e instanceof HttpError) {
+            await sleep(5, 10)
+            return await runTask(task, account, config)
+        }
+
+        throw e
+    }
+}
+
 async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig) {
     
     for(let task of tasks) {
         try {
             await waitForGas(account)
-            await task(account, config)
+            await runTask(task, account, config)
             await sleep(config.sleep_protocols[0], config.sleep_protocols[1])
         } catch(e) {
             if(e !== undefined) {

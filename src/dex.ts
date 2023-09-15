@@ -77,11 +77,11 @@ export class l0_or_jediSWAP extends Dex {
             return result
         }
 
-        const percent = (amountIn * BigInt(slippage.nominator)) / BigInt(100 * slippage.denominator)
+        const percent = (amountIn /100n) * BigInt(slippage.nominator) / BigInt(slippage.denominator)
         const result = amountIn - percent
-
-        if(tokenFrom.decimals === tokenTo.decimals) return result
-        if(tokenFrom.decimals < tokenTo.decimals) return result * BigInt(10**(tokenTo.decimals - tokenFrom.decimals))
-        return result / BigInt(10**(tokenFrom.decimals - tokenTo.decimals))
+        return result
+        // if(tokenFrom.decimals === tokenTo.decimals) return result
+        // if(tokenFrom.decimals < tokenTo.decimals) return result * BigInt(10**(tokenTo.decimals - tokenFrom.decimals))
+        // return result / BigInt(10**(tokenFrom.decimals - tokenTo.decimals))
     }
 }

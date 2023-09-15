@@ -20,8 +20,8 @@ export const config: Iconfig = {
     upgrade: false,
 
     /* Предоставление ликвидности в jediSwap */
-    jediSwap_liq: false,
-    jediSwap_liq_amount: [3, 3], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
+    jediSwap_liq: true,
+    jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
     
     /*
         dex - рандомизирует количество dex протоколов
@@ -29,7 +29,7 @@ export const config: Iconfig = {
         если указано [1, 2] или [1, 4] будет взято случайное число протоколов от 1 до 2 или от 1 до 3 соотвественно 
     */
     protocols: [4, 4], //Выбирает случайное количество протоколов [ОТ, ДО] из включенных НИЖЕ.
-    jediSwap: true,
+    jediSwap: false,
     l0kswap: false,
     mySwap: false,
     dmail: false, 

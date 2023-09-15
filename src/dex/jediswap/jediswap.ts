@@ -168,21 +168,21 @@ export class Jediswap extends l0_or_jediSWAP {
                     throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
                 }
 
-                const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
+                const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
                 return
             }
 
             return
         }
-
+        console.log(usdcBalance, formatDepositValue)
         if(usdcBalance < formatDepositValue) {
 
             let needToSwapUSDT = formatDepositValue - usdcBalance
             let percent = needToSwapUSDT * 20n/100n
             needToSwapUSDT += percent
             
-            if(usdtBalance > formatDepositValue && needToSwapUSDT > 0n && needToSwapUSDT < usdcBalance) {
+            if(usdtBalance > formatDepositValue && needToSwapUSDT > 0n && needToSwapUSDT < usdtBalance) {
                 await this.swap(needToSwapUSDT, this.tokens.USDT, this.tokens.USDC, slippage)
                 return
             }
@@ -194,7 +194,7 @@ export class Jediswap extends l0_or_jediSWAP {
                     throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
                 }
 
-                const formatNeedToSwapEth = ethers.parseEther(needToSwapEth.toString())
+                const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
                 await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
                 return
             }

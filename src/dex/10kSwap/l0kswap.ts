@@ -31,6 +31,14 @@ export class L0kswap extends l0_or_jediSWAP {
             deadline
         ]
 
+        console.log([
+            amountIn, 
+            amountOut,
+            path,
+            to,
+            deadline
+        ])
+
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
         try {
