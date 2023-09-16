@@ -163,24 +163,22 @@ async function main() {
 
     for(let [i, privateKeyORmnemonic] of privates.entries()) {
         const tasks = getTasks(config);
-        (async () => {
-            try {
-                const myAccounts = new MyAccounts(provider)
-                const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
-                await myAccounts.checkDeploy(account, privateKey)
+        try {
+            const myAccounts = new MyAccounts(provider)
+            const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
+            await myAccounts.checkDeploy(account, privateKey)
 
-                //Проверяем количество eth на аккаунте
-                await refuelEth(account, config.refuel_threshold, config.slippage)
+            //Проверяем количество eth на аккаунте
+            await refuelEth(account, config.refuel_threshold, config.slippage)
 
-                const shuffledTasks = shuffleTask(tasks)
-                showTasks(shuffledTasks, account.address)
+            const shuffledTasks = shuffleTask(tasks)
+            showTasks(shuffledTasks, account.address)
 
-                await startTasks(shuffledTasks, account, config)
+            await startTasks(shuffledTasks, account, config)
 
-            } catch(e: any) {
-                logger.error(e)
-            }
-        })()
+        } catch(e: any) {
+            logger.error(e)
+        }
         await sleep(config.sleep_account[0], config.sleep_account[1])
     }
 }
