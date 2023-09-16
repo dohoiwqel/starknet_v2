@@ -1,6 +1,6 @@
 import { Account, HttpError, Provider, SequencerProvider, constants, stark } from "starknet";
 import { Iconfig } from './interfaces/iconfig';
-import { ethers } from 'ethers';
+import { JsonRpcApiProvider, ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate, task_upgrade_implementation } from "./src/tasks";
@@ -99,6 +99,12 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
     }
 }
 
+async function getEthGasPrice(ethProvider: JsonRpcApiProvider) {
+    let gasPrice = (await ethProvider.getFeeData()).gasPrice
+    gasPrice! += ethers.parseUnits("2", 'gwei')
+    return gasPrice
+}
+
 async function main() {
     const privates = await read('privates.txt')
 
@@ -113,8 +119,8 @@ async function main() {
         const starkgate = new Starkgate()
         const starknetFee = await starkgate.getStarknetFee()
         const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
-        const gasPrice = (await ethProvider.getFeeData()).gasPrice
-
+        
+        const gasPrice = await getEthGasPrice(ethProvider)
         const gas = 125_000n
         const executionFee = gas * gasPrice!
         const value = ethers.parseEther(config.starkgate_amount)
@@ -129,8 +135,7 @@ async function main() {
         const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
         const ethPrivates = await read('ethPrivates.txt')
 
-        let gasPrice = (await ethProvider.getFeeData()).gasPrice
-        gasPrice! += ethers.parseUnits("2", 'gwei')
+        const gasPrice = await getEthGasPrice(ethProvider)
         const starknetFee = await starkgate.getStarknetFee()
 
         if(ethPrivates.length === 0) {
