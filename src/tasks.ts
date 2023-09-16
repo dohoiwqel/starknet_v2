@@ -66,7 +66,7 @@ export async function task_mySwap(account: Account, config: Iconfig) {
     }
 }
 
-export async function task_10kSwap(account: Account, config: Iconfig) {
+export async function task_10kSwap(account: Account, config: Iconfig): Promise<void> {
 
     const l0kSwap = new L0kswap(account, "10kSwap")
     const finder = new Finder(account)
