@@ -6,6 +6,7 @@ export const config: Iconfig = {
     minGasPrice: 100, //Минимальный газ при котором софт начнет работу в GWEI прим. 100 = 100gwei
     sleep_protocols: [1, 1], //Задержка между выполнением потоколов. Случайное число [ОТ, ДО] в СЕКУНДАХ
     sleep_account: [1, 1], //Задержка между запуском аккаунтов. Случайное число [ОТ, ДО] в СЕКУНДАХ
+    refuel_threshold: "0.0035",
 
     /* Создание кошельков */
     batch_create: false,
@@ -20,7 +21,7 @@ export const config: Iconfig = {
     upgrade: false,
 
     /* Предоставление ликвидности в jediSwap */
-    jediSwap_liq: true,
+    jediSwap_liq: false,
     jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
     
     /*
@@ -32,7 +33,7 @@ export const config: Iconfig = {
     jediSwap: false,
     l0kswap: false,
     mySwap: false,
-    dmail: false, 
+    dmail: true, 
 
     slippage: 1, //Проскальзывание в процентах 1 = 1%
 

@@ -1,5 +1,4 @@
 import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, SequencerProvider, TransactionStatus, Uint256, constants } from "starknet";
-import { logger } from "../logger/logger";
 
 export class Protocol {
 
@@ -11,11 +10,16 @@ export class Protocol {
         this.taskName = taskName
     }
 
-    protected async waitForTransaction(tx: string) {
+    protected async waitForTransaction(tx: string): Promise<GetTransactionReceiptResponse> {
         try {
             const provider = new SequencerProvider({ baseUrl: constants.BaseUrl.SN_MAIN })
             const response = await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
-            return response
+            
+            if(response.status === 'ACCEPTED_ON_L2') return response;
+            if(response.status === 'REJECTED') throw `Не удалось послать транзакцию ${response.transaction_hash}`;
+
+            return await this.waitForTransaction(tx)
+
         } catch(e: any) {
             throw (e.response || e.error || e)
         }

@@ -7,6 +7,7 @@ import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_
 import { Starkgate } from "./src/Starkgate/starkgate";
 import { config } from "./cfg";
 import { getRandomElementFromArray, getRandomInt, read, sleep } from "./utils/utils";
+import { refuelEth } from "./utils/refuel";
 
 async function waitForGas(account: Account) {
     let gasPrice: number
@@ -161,6 +162,9 @@ async function main() {
                 const myAccounts = new MyAccounts(provider)
                 const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
                 await myAccounts.checkDeploy(account, privateKey)
+
+                //Проверяем количество eth на аккаунте
+                await refuelEth(account, config.refuel_threshold, config.slippage)
 
                 const shuffledTasks = shuffleTask(tasks)
                 showTasks(shuffledTasks, account.address)

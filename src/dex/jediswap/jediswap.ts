@@ -1,6 +1,5 @@
 import { Account, CallData, Contract, Provider, ProviderInterface, num, provider, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
-import { BigNumberish } from 'starknet';
 import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { Dex, l0_or_jediSWAP } from '../../dex';

@@ -20,5 +20,6 @@ export interface Iconfig {
     sleep_protocols: number[],
     sleep_account: number[],
     protocols: number[],
+    refuel_threshold: string,
     
 }
