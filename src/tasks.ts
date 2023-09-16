@@ -96,12 +96,12 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
 
         if(ethToTrade < 0n) {
             await l0kSwap.refuelETH(config.slippage)
-            return
+            return await task_10kSwap(account, config)
         }
 
-        if(ethToTrade < 0n) {
-            throw logger.error(`На балансе недостаточно эфира для eth свапа. Минимальный остаток - ${ethToRemain}`)
-        }
+        // if(ethToTrade < 0n) {
+        //     throw logger.error(`На балансе недостаточно эфира для eth свапа. Минимальный остаток - ${ethToRemain}`)
+        // }
 
         console.log(ethToTrade, eToken, tokenTo, slippage)
 
