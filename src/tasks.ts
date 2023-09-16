@@ -99,6 +99,12 @@ export async function task_10kSwap(account: Account, config: Iconfig) {
             return
         }
 
+        if(ethToTrade < 0n) {
+            throw logger.error(`На балансе недостаточно эфира для eth свапа. Минимальный остаток - ${ethToRemain}`)
+        }
+
+        console.log(ethToTrade, eToken, tokenTo, slippage)
+
         const executionFee = await l0kSwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
         ethToTrade -= executionFee.suggestedMaxFee!
 
