@@ -13,7 +13,7 @@ export const config: Iconfig = {
     batch_create_number: 30, //Количество созданных кошельков
 
     /* Бридж ETH через официальный мост */ 
-    starkgate: false,
+    starkgate: true,
     starkgate_show_fee: false, // Если true покажет сколько потребуется ETH для установленного starkgate_amount. БРИДЖ НЕ ПРОИЗОЙДЕТ
     starkgate_amount: "0.0077",
 

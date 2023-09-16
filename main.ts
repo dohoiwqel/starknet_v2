@@ -129,7 +129,8 @@ async function main() {
         const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
         const ethPrivates = await read('ethPrivates.txt')
 
-        const gasPrice = (await ethProvider.getFeeData()).gasPrice
+        let gasPrice = (await ethProvider.getFeeData()).gasPrice
+        gasPrice! += ethers.parseUnits("2", 'gwei')
         const starknetFee = await starkgate.getStarknetFee()
 
         if(ethPrivates.length === 0) {
