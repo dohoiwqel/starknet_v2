@@ -13,8 +13,8 @@ export const config: Iconfig = {
     batch_create_number: 30, //Количество созданных кошельков
 
     /* Бридж ETH через официальный мост */ 
-    starkgate: true,
-    starkgate_show_fee: true, // Если true покажет сколько потребуется ETH для установленного starkgate_amount. БРИДЖ НЕ ПРОИЗОЙДЕТ
+    starkgate: false,
+    starkgate_show_fee: false, // Если true покажет сколько потребуется ETH для установленного starkgate_amount. БРИДЖ НЕ ПРОИЗОЙДЕТ
     starkgate_amount: "0.0077",
 
     /* Обновдение кошельков до актуальной версии имплементации */
@@ -23,6 +23,11 @@ export const config: Iconfig = {
     /* Предоставление ликвидности в jediSwap */
     jediSwap_liq: false,
     jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
+
+    /* Бридж ИЗ старкнета в arbitrum, использця orbiter */
+    orbiter_to_evm: true,
+    orbiter_amount: "0", //Если 0, то выполнит трансфер всего эфира
+    
     
     /*
         dex - рандомизирует количество dex протоколов
@@ -33,7 +38,7 @@ export const config: Iconfig = {
     jediSwap: false,
     l0kswap: false,
     mySwap: false,
-    dmail: true, 
+    dmail: false, 
 
     slippage: 1, //Проскальзывание в процентах 1 = 1%
 

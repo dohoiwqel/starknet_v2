@@ -3,11 +3,12 @@ import { Iconfig } from './interfaces/iconfig';
 import { JsonRpcApiProvider, ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
-import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_starkgate, task_upgrade_implementation } from "./src/tasks";
+import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_orbiterToEvm, task_starkgate, task_upgrade_implementation } from "./src/tasks";
 import { Starkgate } from "./src/Starkgate/starkgate";
 import { config } from "./cfg";
 import { getRandomElementFromArray, getRandomInt, read, sleep } from "./utils/utils";
 import { refuelEth } from "./utils/refuel";
+import { Orbiter } from "./src/orbiter/orbiter";
 
 async function waitForGas(account: Account) {
     let gasPrice: number
@@ -40,8 +41,8 @@ function getTasks(config: Iconfig) {
     const protocolsCount = getRandomInt(minProtocolsCount, maxProtocolsCount)
     getRandomElementFromArray(protocols, protocolsCount, tasks)
 
+    //Задачи не относятся к протоколам, поэтому их делаем всегда
     if(config.jediSwap_liq) tasks.push(task_jediSwap_liq);
-    if(config.upgrade) tasks.push(task_upgrade_implementation);
 
     return tasks
 }
@@ -49,6 +50,10 @@ function getTasks(config: Iconfig) {
 function shuffleTask(tasks: Array<Task>) {
     const shuffledArr = tasks.slice()
     shuffledArr.sort(() => Math.random() - 0.5)
+
+    //Добавляем элементы, которые должны идти обязательно на заданных местах
+    if(config.upgrade) shuffledArr.unshift(task_upgrade_implementation);
+
     return shuffledArr;
 }
 
@@ -107,6 +112,7 @@ async function getEthGasPrice(ethProvider: JsonRpcApiProvider) {
 
 async function main() {
     const privates = await read('privates.txt')
+    const ethPrivates = await read('ethPrivates.txt')
 
     const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
 
@@ -127,13 +133,14 @@ async function main() {
 
         const total = ethers.formatEther((executionFee + value + starknetFee).toString().split('.')[0]) 
         logger.info(`Для бриджа нужно минимум ${total}`, undefined, 'Strakgate')
+        
+        return
     }
 
     if(config.starkgate) {
         const starkgate = new Starkgate()
         const myAccounts = new MyAccounts(provider)
         const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
-        const ethPrivates = await read('ethPrivates.txt')
 
         const gasPrice = await getEthGasPrice(ethProvider)
         const starknetFee = await starkgate.getStarknetFee()
@@ -153,6 +160,27 @@ async function main() {
             const amount = ethers.parseEther(config.starkgate_amount).toString()
             await task_starkgate(wallet, l2Address, value.toString(), amount, gasPrice!)
             await sleep(config.sleep_account[0], config.sleep_account[1])
+        }
+
+        return
+    }
+
+    if(config.orbiter_to_evm) {
+
+        const taskName = 'orbiterToEvm'
+
+        if(privates.length !== ethPrivates.length) {
+            logger.error(`Количество evm и starknet приватных ключей должно совпадать`, undefined, taskName)
+            return
+        }
+
+        for(let [i, privateKeyORmnemonic] of privates.entries()) {
+            const myAccounts = new MyAccounts(provider)
+            const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
+
+            const evmAddress = (new ethers.Wallet(ethPrivates[i])).address
+            
+            await task_orbiterToEvm(account, config.orbiter_amount, 'arbitrum', evmAddress)
         }
 
         return

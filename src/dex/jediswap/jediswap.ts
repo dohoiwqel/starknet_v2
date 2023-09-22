@@ -14,10 +14,10 @@ export class Jediswap extends l0_or_jediSWAP {
     private ABI: any[] = contractABI
 
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
+        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
         
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
+            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
         }
 
         const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)
@@ -44,7 +44,7 @@ export class Jediswap extends l0_or_jediSWAP {
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
         try {
-            const receipt = await this.sendTransaction(contract, this.account, 'swap_exact_tokens_for_tokens', callData)
+            const receipt = await this.sendTransaction(contract, 'swap_exact_tokens_for_tokens', callData)
             logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
@@ -52,10 +52,10 @@ export class Jediswap extends l0_or_jediSWAP {
     }
 
     async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
+        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
         
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
+            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
         }
 
         const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)
@@ -121,10 +121,10 @@ export class Jediswap extends l0_or_jediSWAP {
     private async checkAddLiquidity(depositValue: number, slippage: denomNumber) {
         
         //Проверки на наличие достоточного количество USDT USDC
-        const usdtBalance = await this.getBalanceOf(this.account, this.tokens.USDT)
-        const usdcBalance = await this.getBalanceOf(this.account, this.tokens.USDC)
+        const usdtBalance = await this.getBalanceOf(this.tokens.USDT)
+        const usdcBalance = await this.getBalanceOf(this.tokens.USDC)
         
-        const ethBalance = await this.getBalanceOf(this.account, this.tokens.ETH)
+        const ethBalance = await this.getBalanceOf(this.tokens.ETH)
         const ethPrice = BigInt(await getEthPrice())
         
         const ethUSDBalance = ethBalance * ethPrice
@@ -212,8 +212,8 @@ export class Jediswap extends l0_or_jediSWAP {
         const amountB = amountA * ratio / 1_000_000n
         const deadline = String(Math.round(Date.now() / 1000 + 3600));
 
-        await this.approve(this.account, this.tokens.USDT, uint256.bnToUint256(amountA), this.contractAddress, this.taskName)
-        await this.approve(this.account, this.tokens.USDC, uint256.bnToUint256(amountB), this.contractAddress, this.taskName)
+        await this.approve(this.tokens.USDT, uint256.bnToUint256(amountA), this.contractAddress)
+        await this.approve(this.tokens.USDC, uint256.bnToUint256(amountB), this.contractAddress)
 
         const callData = [
             this.tokens.USDT.contractAddress,
@@ -240,7 +240,7 @@ export class Jediswap extends l0_or_jediSWAP {
         const contract = new Contract(this.ABI, this.contractAddress, this.account)
 
         try {
-            const receipt = await this.sendTransaction(contract, this.account, "add_liquidity", callData)
+            const receipt = await this.sendTransaction(contract, "add_liquidity", callData)
             logger.success(`Залили ликвидность в JediSwap ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось залить ликвидность в Jediswap ${e}`, this.account.address, this.taskName)

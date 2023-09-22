@@ -1,3 +1,5 @@
+import { network } from "../src/orbiter/bridgeData"
+
 export interface Iconfig {
     stableSwap: boolean,
     jediSwap: boolean,
@@ -21,5 +23,6 @@ export interface Iconfig {
     sleep_account: number[],
     protocols: number[],
     refuel_threshold: string,
-    
+    orbiter_to_evm: boolean,
+    orbiter_amount: string,
 }

@@ -92,10 +92,10 @@ export class Myswap extends Dex {
     }
 
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
+        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
 
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
+            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
         }
 
         const poolId = this.getPoolId(tokenFrom, tokenTo)
@@ -114,7 +114,7 @@ export class Myswap extends Dex {
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
         try {
-            const receipt = await this.sendTransaction(contract, this.account, "swap", callData)
+            const receipt = await this.sendTransaction(contract, "swap", callData)
             logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
@@ -122,10 +122,10 @@ export class Myswap extends Dex {
     }
 
     async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
+        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
         
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
+            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
         }
 
         const poolId = this.getPoolId(tokenFrom, tokenTo)

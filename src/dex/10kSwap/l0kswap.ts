@@ -12,10 +12,10 @@ export class L0kswap extends l0_or_jediSWAP {
     private ABI: any[] = contractABI
 
     async swap(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
+        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
 
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
+            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
         }
 
         const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)
@@ -42,7 +42,7 @@ export class L0kswap extends l0_or_jediSWAP {
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
         try {
-            const receipt = await this.sendTransaction(contract, this.account, 'swapExactTokensForTokens', callData)
+            const receipt = await this.sendTransaction(contract, 'swapExactTokensForTokens', callData)
             logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
@@ -50,10 +50,10 @@ export class L0kswap extends l0_or_jediSWAP {
     }
 
     async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(this.account, tokenFrom, this.contractAddress)
+        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
 
         if(amountIn > allowance) {
-            await this.approve(this.account, tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress, this.taskName)
+            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
         }
 
         const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)

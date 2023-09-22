@@ -10,48 +10,7 @@ import { sleep } from "../utils/utils"
 
 export class Dex extends Protocol{
 
-    protected tokens: Tokens = new Tokens()
     protected finder = new Finder(this.account)
-
-    async getBalanceOf(account: Account, token: Token): Promise<bigint> {
-        const contractAddress = token.contractAddress
-        const ABI = token.ABI
-        const contract = new Contract(ABI, contractAddress)        
-        contract.connect(account)
-        const balance = await contract.balanceOf(account.address)
-        return balance.balance.low
-    }
-
-    async getAllowance(account: Account, token: Token, spender: string): Promise<bigint> {
-        const contract = new Contract(token.ABI, token.contractAddress)        
-        contract.connect(account)
-        const allowance = await contract.allowance(account.address, spender)
-        return uint256.uint256ToBN(allowance.remaining)
-    }
-
-    async approve(account: Account, token: Token, amount: uint256.Uint256, spender: string, task_name: string): Promise<void> {
-        const contractAddress = token.contractAddress
-        const ABI = token.ABI
-        const contract = new Contract(ABI, contractAddress, account)        
-
-        const callData = [
-            spender,
-            amount
-        ]
-
-        try {
-            const receipt = await this.sendTransaction(contract, this.account, "approve", callData)
-            logger.success(`Выполнен аппрув ${receipt.transaction_hash}`, this.account.address, this.taskName)
-        } catch(e) {
-            logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
-            console.log(e)
-            if(e instanceof HttpError) {
-                await sleep(5, 10)
-                return await this.approve(account, token, amount, spender, task_name)
-            }
-        }
-
-    }
 
     getTokenTo(tokenFrom: Token) {
         const tokens = this.tokens.getIterator()

@@ -2,7 +2,6 @@ import { Account } from "starknet";
 import { Myswap } from "./dex/myswap/myswap";
 import { Finder } from "./finder";
 import { ethers } from "ethers";
-import { Iconfig } from "../interfaces/iconfig";
 import { makeDenominator } from "./denominator";
 import { L0kswap } from "./dex/10kSwap/l0kswap";
 import { Jediswap } from "./dex/jediswap/jediswap";
@@ -12,8 +11,11 @@ import { getRandomNumber } from "./randomNumber";
 import { Starkgate } from "./Starkgate/starkgate";
 import { UpgradeImplementation } from "./Upgrade/upgrade";
 import { getRandomInt } from "../utils/utils";
+import { Orbiter } from "./orbiter/orbiter";
+import { network } from "./orbiter/bridgeData";
+import { Iconfig } from "../interfaces/iconfig";
 
-export type Task = (account: Account, config: Iconfig) => Promise<void>  
+export type Task = (account: Account, config: Iconfig) => Promise<void>
 
 export async function task_mySwap(account: Account, config: Iconfig) {
 
@@ -198,4 +200,9 @@ export async function task_upgrade_implementation(account: Account) {
     const upgrade = new UpgradeImplementation(account, "Upgrade")
     const currentVersion = "000.000.011"
     await upgrade.upgrade(currentVersion)
+}
+
+export async function task_orbiterToEvm(account: Account, amount: string, toNetwork: network, evmAddress: string) {
+    const orbiter = new Orbiter(account, 'orbiterToEvm')
+    await orbiter.bridge(ethers.parseEther(amount), toNetwork, evmAddress)
 }

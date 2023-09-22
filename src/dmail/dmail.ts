@@ -43,7 +43,7 @@ export class Dmail extends Protocol {
             ]
 
             try {
-                const receipt = await this.sendTransaction(contract, this.account, "transaction", callData)
+                const receipt = await this.sendTransaction(contract, "transaction", callData)
                 logger.success(`Отправлено письмо ${receipt.transaction_hash}`, this.account.address, this.taskName)
             } catch(e: any) {
                 throw e
