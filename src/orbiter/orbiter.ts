@@ -2,7 +2,7 @@ import { Contract, uint256 } from "starknet";
 import { Protocol } from "../protocol";
 import { ABI } from "./ABI";
 import { Tokens } from "../tokens/tokens";
-import { logger } from "../../logger/logger";
+import { get_short_address, logger } from "../../logger/logger";
 import { checkPayText, getMinBridgeAmount, getPayTextId, getPayTextValue, getWithHoldingFee, network } from "./bridgeData";
 import { ethers } from "ethers";
 
@@ -51,7 +51,7 @@ export class Orbiter extends Protocol {
 
     async bridge(amount: bigint, toNetwork: network, evmAddress: string) {
 
-        logger.info(`Начали выполнять бридж`, this.account.address, this.taskName)
+        logger.info(`Начали выполнять бридж STARKNET: ${get_short_address(this.account.address)} -> ${toNetwork.toUpperCase()}: ${get_short_address(evmAddress)}`, this.account.address, this.taskName)
 
         const contractAddress = '0x0173f81c529191726c6e7287e24626fe24760ac44dae2a1f7e02080230f8458b'
 

@@ -25,4 +25,6 @@ export interface Iconfig {
     refuel_threshold: string,
     orbiter_to_evm: boolean,
     orbiter_amount: string,
+    orbiter_to_network: network,
+    orbiter_to_evm_address?: string,
 }

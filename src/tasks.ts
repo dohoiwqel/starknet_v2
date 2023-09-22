@@ -202,7 +202,17 @@ export async function task_upgrade_implementation(account: Account) {
     await upgrade.upgrade(currentVersion)
 }
 
-export async function task_orbiterToEvm(account: Account, amount: string, toNetwork: network, evmAddress: string) {
+// export async function task_orbiterToEvm(account: Account, amount: string, toNetwork: network, evmAddress: string) {
+//     const orbiter = new Orbiter(account, 'orbiterToEvm')
+//     await orbiter.bridge(ethers.parseEther(amount), toNetwork, evmAddress)
+// }
+
+export async function task_orbiter_to_evm(account: Account, config: Iconfig) {
+
+    if(!config.orbiter_to_evm_address) {
+        throw logger.error('Не указан EVM аддресс', account.address)
+    }
+
     const orbiter = new Orbiter(account, 'orbiterToEvm')
-    await orbiter.bridge(ethers.parseEther(amount), toNetwork, evmAddress)
+    await orbiter.bridge(ethers.parseEther(config.orbiter_amount), config.orbiter_to_network, config.orbiter_to_evm_address)
 }

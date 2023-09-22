@@ -3,7 +3,7 @@ import { Iconfig } from './interfaces/iconfig';
 import { JsonRpcApiProvider, ethers } from 'ethers';
 import { MyAccounts } from './wallets/myAccounts';
 import { logger } from "./logger/logger";
-import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_orbiterToEvm, task_starkgate, task_upgrade_implementation } from "./src/tasks";
+import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_orbiter_to_evm, task_starkgate, task_upgrade_implementation } from "./src/tasks";
 import { Starkgate } from "./src/Starkgate/starkgate";
 import { config } from "./cfg";
 import { getRandomElementFromArray, getRandomInt, read, sleep } from "./utils/utils";
@@ -53,6 +53,7 @@ function shuffleTask(tasks: Array<Task>) {
 
     //Добавляем элементы, которые должны идти обязательно на заданных местах
     if(config.upgrade) shuffledArr.unshift(task_upgrade_implementation);
+    if(config.orbiter_to_evm) shuffledArr.push(task_orbiter_to_evm)
 
     return shuffledArr;
 }
@@ -78,7 +79,6 @@ async function runTask(task: Task, account: Account, config: Iconfig): Promise<v
     try {
         await task(account, config)
     } catch(e: any) {
-        console.log(e)
         if(e instanceof HttpError) {
             await sleep(5, 10)
             return await runTask(task, account, config)
@@ -165,29 +165,7 @@ async function main() {
         return
     }
 
-    if(config.orbiter_to_evm) {
-
-        const taskName = 'orbiterToEvm'
-
-        if(privates.length !== ethPrivates.length) {
-            logger.error(`Количество evm и starknet приватных ключей должно совпадать`, undefined, taskName)
-            return
-        }
-
-        for(let [i, privateKeyORmnemonic] of privates.entries()) {
-            const myAccounts = new MyAccounts(provider)
-            const {account, privateKey} = await myAccounts.getAccount(privateKeyORmnemonic)
-
-            const evmAddress = (new ethers.Wallet(ethPrivates[i])).address
-            
-            await task_orbiterToEvm(account, config.orbiter_amount, 'arbitrum', evmAddress)
-        }
-
-        return
-    }
-
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
-
 
     for(let [i, privateKeyORmnemonic] of privates.entries()) {
         const tasks = getTasks(config);
@@ -197,15 +175,27 @@ async function main() {
             await myAccounts.checkDeploy(account, privateKey)
 
             //Проверяем количество eth на аккаунте
-            await refuelEth(account, config.refuel_threshold, config.slippage)
+            // await refuelEth(account, config.refuel_threshold, config.slippage)
 
             const shuffledTasks = shuffleTask(tasks)
             showTasks(shuffledTasks, account.address)
 
+            if(shuffledTasks.includes(task_orbiter_to_evm)) {
+                if(privates.length !== ethPrivates.length) {
+                    logger.error(`Количество evm и starknet приватных ключей должно совпадать`, undefined, 'task_orbiter_to_evm')
+                    return
+                }
+
+                const evmAddress = (new ethers.Wallet(ethPrivates[i])).address
+                config.orbiter_to_evm_address = evmAddress
+            }
+
             await startTasks(shuffledTasks, account, config)
 
         } catch(e: any) {
-            logger.error(e)
+            if(e !== undefined) {
+                logger.error(e)
+            }
         }
         await sleep(config.sleep_account[0], config.sleep_account[1])
     }

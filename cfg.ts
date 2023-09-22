@@ -27,6 +27,7 @@ export const config: Iconfig = {
     /* Бридж ИЗ старкнета в arbitrum, использця orbiter */
     orbiter_to_evm: true,
     orbiter_amount: "0", //Если 0, то выполнит трансфер всего эфира на кошельке
+    orbiter_to_network: 'arbitrum',
     
     /*
         dex - рандомизирует количество dex протоколов
