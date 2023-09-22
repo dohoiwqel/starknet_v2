@@ -175,7 +175,7 @@ async function main() {
             await myAccounts.checkDeploy(account, privateKey)
 
             //Проверяем количество eth на аккаунте
-            // await refuelEth(account, config.refuel_threshold, config.slippage)
+            await refuelEth(account, config.refuel_threshold, config.slippage)
 
             const shuffledTasks = shuffleTask(tasks)
             showTasks(shuffledTasks, account.address)
