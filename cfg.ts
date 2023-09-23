@@ -2,6 +2,14 @@ import { Iconfig } from "./interfaces/iconfig";
 
 export const config: Iconfig = {
 
+    //OKX
+    okx_apiKey: '',
+    okx_passPhrase: '',
+    okx_secretKey: '',
+    okx_amount: '0.001',
+    okx_sleep_min: 5,
+    okx_sleep_max: 10,
+
     /* Ощиие настройки */
     minGasPrice: 100, //Минимальный газ при котором софт начнет работу в GWEI прим. 100 = 100gwei
     sleep_protocols: [1, 1], //Задержка между выполнением потоколов. Случайное число [ОТ, ДО] в СЕКУНДАХ
@@ -13,8 +21,8 @@ export const config: Iconfig = {
     batch_create_number: 30, //Количество созданных кошельков
 
     /* Бридж ETH через официальный мост */ 
-    starkgate: false,
-    starkgate_show_fee: false, // Если true покажет сколько потребуется ETH для установленного starkgate_amount. БРИДЖ НЕ ПРОИЗОЙДЕТ
+    // starkgate: false,
+    // starkgate_show_fee: false, // Если true покажет сколько потребуется ETH для установленного starkgate_amount. БРИДЖ НЕ ПРОИЗОЙДЕТ
     starkgate_amount: "0.0077",
 
     /* Обновдение кошельков до актуальной версии имплементации */

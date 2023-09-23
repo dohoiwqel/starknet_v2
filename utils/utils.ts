@@ -1,5 +1,7 @@
 import readline from 'readline'
 import * as fs from 'fs'
+import { Account } from 'starknet';
+import { JsonRpcApiProvider, ethers } from 'ethers';
 
 export function sleep(sleep_min: number, sleep_max: number) {
     const seconds = getRandomInt(sleep_min, sleep_max) 
@@ -43,4 +45,27 @@ export function getRandomElementFromArray(fromArray: any[], n: number, mutableAr
     }
   
     return mutableArray;
+}
+
+export async function waitForGas(account: Account, minGasPrice: number) {
+    let gasPrice: number
+    while(true) {
+        const block = await account.getBlock("latest")
+        gasPrice = Math.round(Number(ethers.formatUnits(block.gas_price!, "gwei")))
+        if(gasPrice > minGasPrice) {
+            console.log(`Ждем пока газ опустится до ${minGasPrice}. Текущий газ ${gasPrice} Gwei`)
+            await new Promise(resolve => {setTimeout(() => resolve(' '), 10_000)})
+        } else {
+            break
+        }
+    }
+
+    // console.log(`Текущий газ ${gasPrice!} Gwei начинаем работу с аккаунтом ${account.address}`)
+    return
+}
+
+export async function getEthGasPrice(ethProvider: JsonRpcApiProvider) {
+    let gasPrice = (await ethProvider.getFeeData()).gasPrice
+    gasPrice! += ethers.parseUnits("2", 'gwei')
+    return gasPrice
 }

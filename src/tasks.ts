@@ -191,10 +191,10 @@ export async function task_dmail(account: Account, config: Iconfig) {
     await dmail.sendMail(randomMailsNumber)
 }
 
-export async function task_starkgate(account: ethers.Wallet, l2Address: string, value: string, amount: string, gasPrice: bigint) {
-    const starkgate = new Starkgate(account)
-    await starkgate.bridge(l2Address, value, amount, gasPrice)
-}
+// export async function task_starkgate(account: ethers.Wallet, l2Address: string, value: string, amount: string, gasPrice: bigint) {
+//     const starkgate = new Starkgate(account)
+//     await starkgate.bridge(l2Address, value, amount, gasPrice)
+// }
 
 export async function task_upgrade_implementation(account: Account) {
     const upgrade = new UpgradeImplementation(account, "Upgrade")
