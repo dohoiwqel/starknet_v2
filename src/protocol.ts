@@ -30,8 +30,9 @@ export class Protocol {
                 return await this.waitForTransaction(tx)
             }
         } catch(e: any) {
-            console.log('DEV: ошибка с ожиданием транзакции')
-            throw (e.response || e.error || e)
+            return await this.waitForTransaction(tx)
+            // console.log('DEV: ошибка с ожиданием транзакции')
+            // throw (e.response || e.error || e)
         }
     }
 
