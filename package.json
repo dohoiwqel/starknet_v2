@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "batch_create": "ts-node main\\batchCreate.ts",
-    "main": "ts-node main\\main.ts",
-    "starkgate_bridge": "ts-node main\\starkgateBridge.ts",
-    "starkgate_fee": "ts-node main\\starkgateShowFee.ts",
-    "okx_refuel": "ts-node main\\okx_refuel",
-    "help": "ts-node main\\help",
-    "create_data": "ts-node main\\accountManager"
+    "batch_create": "ts-node main/batchCreate.ts",
+    "main": "ts-node main/main.ts",
+    "starkgate_bridge": "ts-node main/starkgateBridge.ts",
+    "starkgate_fee": "ts-node main/starkgateShowFee.ts",
+    "okx_refuel": "ts-node main/okx_refuel",
+    "help": "ts-node main/help",
+    "create_data": "ts-node main/accountManager"
   },
   "author": "",
   "license": "ISC",
