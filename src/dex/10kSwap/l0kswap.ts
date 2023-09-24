@@ -1,10 +1,9 @@
 import { Contract, uint256 } from "starknet";
 import { contractABI } from './contractABI';
 import { denomNumber, makeDenominator } from '../../denominator';
-import { Dex, l0_or_jediSWAP } from '../../dex';
+import { l0_or_jediSWAP } from '../../dex';
 import { logger } from "../../../logger/logger";
 import { Token } from "../../tokens/tokens";
-import { Iconfig } from "../../../interfaces/iconfig";
 import { ethers } from "ethers";
 
 export class L0kswap extends l0_or_jediSWAP {
@@ -32,13 +31,13 @@ export class L0kswap extends l0_or_jediSWAP {
             deadline
         ]
 
-        console.log([
-            amountIn, 
-            amountOut,
-            path,
-            to,
-            deadline
-        ])
+        // console.log([
+        //     amountIn, 
+        //     amountOut,
+        //     path,
+        //     to,
+        //     deadline
+        // ])
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 

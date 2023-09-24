@@ -1,4 +1,4 @@
-import { Account, Contract, HttpError, Provider, SequencerProvider, TransactionStatus, constants, ec, number, transaction, uint256 } from "starknet";
+import { Contract } from "starknet";
 import { encoder } from "./encoder";
 import { ABI } from './ABI'
 import { logger } from "../../logger/logger";
@@ -47,7 +47,6 @@ export class Dmail extends Protocol {
                 logger.success(`Отправлено письмо ${receipt.transaction_hash}`, this.account.address, this.taskName)
             } catch(e: any) {
                 throw e
-                // logger.error(`Не удалось отправить письмо ${e}`, this.account.address, this.taskName)
             }
         }
 

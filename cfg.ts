@@ -27,7 +27,7 @@ export const config: Iconfig = {
     jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
 
     /* Бридж ИЗ старкнета в arbitrum, использця orbiter */
-    orbiter_to_evm: true,
+    orbiter_to_evm: false,
     orbiter_amount: "0", //Если 0, то выполнит трансфер всего эфира на кошельке
     orbiter_to_network: 'arbitrum',
     
@@ -37,10 +37,10 @@ export const config: Iconfig = {
         если указано [1, 2] или [1, 4] будет взято случайное число протоколов от 1 до 2 или от 1 до 3 соотвественно 
     */
     protocols: [4, 4], //Выбирает случайное количество протоколов [ОТ, ДО] из включенных НИЖЕ.
-    jediSwap: false,
-    l0kswap: false,
-    mySwap: false,
-    dmail: false, 
+    jediSwap: true,
+    l0kswap: true,
+    mySwap: true,
+    dmail: true, 
 
     slippage: 1, //Проскальзывание в процентах 1 = 1%
 

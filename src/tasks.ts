@@ -8,11 +8,9 @@ import { Jediswap } from "./dex/jediswap/jediswap";
 import { logger } from "../logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
-import { Starkgate } from "./Starkgate/starkgate";
 import { UpgradeImplementation } from "./Upgrade/upgrade";
 import { getRandomInt } from "../utils/utils";
 import { Orbiter } from "./orbiter/orbiter";
-import { network } from "./orbiter/bridgeData";
 import { Iconfig } from "../interfaces/iconfig";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>
@@ -101,12 +99,6 @@ export async function task_10kSwap(account: Account, config: Iconfig): Promise<v
             return await task_10kSwap(account, config)
         }
 
-        // if(ethToTrade < 0n) {
-        //     throw logger.error(`На балансе недостаточно эфира для eth свапа. Минимальный остаток - ${ethToRemain}`)
-        // }
-
-        console.log(ethToTrade, eToken, tokenTo, slippage)
-
         const executionFee = await l0kSwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
         ethToTrade -= executionFee.suggestedMaxFee!
 
@@ -191,21 +183,11 @@ export async function task_dmail(account: Account, config: Iconfig) {
     await dmail.sendMail(randomMailsNumber)
 }
 
-// export async function task_starkgate(account: ethers.Wallet, l2Address: string, value: string, amount: string, gasPrice: bigint) {
-//     const starkgate = new Starkgate(account)
-//     await starkgate.bridge(l2Address, value, amount, gasPrice)
-// }
-
 export async function task_upgrade_implementation(account: Account) {
     const upgrade = new UpgradeImplementation(account, "Upgrade")
     const currentVersion = "000.000.011"
     await upgrade.upgrade(currentVersion)
 }
-
-// export async function task_orbiterToEvm(account: Account, amount: string, toNetwork: network, evmAddress: string) {
-//     const orbiter = new Orbiter(account, 'orbiterToEvm')
-//     await orbiter.bridge(ethers.parseEther(amount), toNetwork, evmAddress)
-// }
 
 export async function task_orbiter_to_evm(account: Account, config: Iconfig) {
 

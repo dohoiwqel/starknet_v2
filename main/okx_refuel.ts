@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { config } from '../cfg';
 import { create_data } from '../accountManager/accountManager';
 import { logger } from '../logger/logger';
-import { getRandomInt, sleep } from '../utils/utils';
+import { sleep } from '../utils/utils';
 
 class OKX {
     public headers: any = {}

@@ -1,17 +1,13 @@
-import { Account, HttpError, Provider, SequencerProvider, constants, stark } from "starknet";
+import { Account, HttpError, Provider, constants } from "starknet";
 import { Iconfig } from '../interfaces/iconfig';
-import { JsonRpcApiProvider, ethers } from 'ethers';
 import { MyAccounts } from '../wallets/myAccounts';
 import { logger } from "../logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
-import { Starkgate } from "../src/Starkgate/starkgate";
 import { config } from "../cfg";
-import { getEthGasPrice, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
+import { getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
 import { refuelEth } from "../utils/refuel";
 import { waitForGas } from "../utils/utils";
-import fs from 'fs'
 import path from 'path'
-import { Idata } from "../interfaces/iData";
 import { create_data } from "../accountManager/accountManager";
 
 function getTasks(config: Iconfig) {
@@ -54,13 +50,6 @@ function showTasks(tasks: Array<Task>, accountAddress: string) {
 
     logger.info(`Путь для кошелька ${accountAddress} [${names.join(" -> ")}]`)
 }
-
-// async function batchCreate(config: Iconfig) {
-//     logger.info(`Создаем ${config.batch_create_number} аккаунтов старкнет`)
-//     const myAccounts = new MyAccounts()
-//     myAccounts.batchCreate(config.batch_create_number)
-//     return
-// }
 
 async function runTask(task: Task, account: Account, config: Iconfig): Promise<void> {
     try {

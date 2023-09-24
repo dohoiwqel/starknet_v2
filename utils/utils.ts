@@ -5,7 +5,6 @@ import { JsonRpcApiProvider, ethers } from 'ethers';
 
 export function sleep(sleep_min: number, sleep_max: number) {
     const seconds = getRandomInt(sleep_min, sleep_max) 
-    // console.log(`Спим ${seconds} секунд`)
     return new Promise(resolve => setTimeout(() => resolve(''), seconds*1000))
 }
 
@@ -35,7 +34,6 @@ export function getRandomElementFromArray(fromArray: any[], n: number, mutableAr
     }
   
     while (mutableArray.length < n) {
-        // console.log(mutableArray.length)
         const randomIndex = Math.floor(Math.random() * fromArray.length);
         // Проверка, что строка с таким индексом еще не была выбрана
         if (!selectedIndices.includes(randomIndex)) {

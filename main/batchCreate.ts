@@ -1,8 +1,6 @@
-import { config } from "../cfg"
 import { logger } from "../logger/logger"
 import { input } from "../utils/querys";
 import { MyAccounts } from "../wallets/myAccounts"
-import { prompt } from 'enquirer';
 
 async function main() {
     let answer = await input('Введите количество кошельков')

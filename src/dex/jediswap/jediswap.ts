@@ -1,10 +1,10 @@
-import { Account, CallData, Contract, Provider, ProviderInterface, num, provider, uint256 } from 'starknet'
+import { Contract, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
-import { Dex, l0_or_jediSWAP } from '../../dex';
+import { l0_or_jediSWAP } from '../../dex';
 import { getEthPrice } from '../oracles/oracle';
-import axios, { all } from 'axios'
+import axios from 'axios'
 import { logger } from '../../../logger/logger';
 import { Token } from '../../tokens/tokens';
 
@@ -33,13 +33,13 @@ export class Jediswap extends l0_or_jediSWAP {
             deadline
         ]
 
-        console.log([
-            amountIn, 
-            amountOut,
-            path,
-            to,
-            deadline
-        ], 'НА СВАПЕ')
+        // console.log([
+        //     amountIn, 
+        //     amountOut,
+        //     path,
+        //     to,
+        //     deadline
+        // ], 'НА СВАПЕ')
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
@@ -135,7 +135,6 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(formatDepositValue > usdtBalance && formatDepositValue > usdcBalance) {
             logger.info(`Обмениваем eth на usdt и usdc`, this.account.address, this.taskName)
-            console.log(formatEthUSDBalance, 'формат ethUSDBalance')
             
             const needToSwapUSD = formatDepositValue
             const needToSwapEth = needToSwapUSD / ethPrice
@@ -176,7 +175,7 @@ export class Jediswap extends l0_or_jediSWAP {
 
             return
         }
-        console.log(usdcBalance, formatDepositValue)
+
         if(usdcBalance < formatDepositValue) {
 
             let needToSwapUSDT = formatDepositValue - usdcBalance
@@ -205,7 +204,7 @@ export class Jediswap extends l0_or_jediSWAP {
     }
 
     async addLiquidity(number: number, slippage: number) {
-        console.log(number)
+
         await this.checkAddLiquidity(number, makeDenominator(slippage))
 
         const ratio = await this.getRatio()
@@ -228,16 +227,16 @@ export class Jediswap extends l0_or_jediSWAP {
             deadline
         ]
 
-        console.log([
-            this.tokens.USDT.contractAddress,
-            this.tokens.USDC.contractAddress,
-            amountA,
-            amountB,
-            amountA * 995n/1000n,
-            amountB * 995n/1000n,
-            this.account.address,
-            deadline
-        ])
+        // console.log([
+        //     this.tokens.USDT.contractAddress,
+        //     this.tokens.USDC.contractAddress,
+        //     amountA,
+        //     amountB,
+        //     amountA * 995n/1000n,
+        //     amountB * 995n/1000n,
+        //     this.account.address,
+        //     deadline
+        // ])
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account)
 

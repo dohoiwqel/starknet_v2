@@ -32,7 +32,6 @@ export class Protocol {
         } catch(e: any) {
             return await this.waitForTransaction(tx)
             // console.log('DEV: ошибка с ожиданием транзакции')
-            // throw (e.response || e.error || e)
         }
     }
 
@@ -44,7 +43,6 @@ export class Protocol {
 
         } catch(e: any) {
             if(e.message && e.message.includes('nonce')) {
-                console.log('DEV: Ошибка с nonce')
                 return await this.sendTransaction(contract, functionName, callData)
             }
 
@@ -81,7 +79,7 @@ export class Protocol {
             logger.success(`Выполнен аппрув ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
-            console.log(e)
+
             if(e instanceof HttpError) {
                 await sleep(5, 10)
                 return await this.approve(token, amount, spender)
