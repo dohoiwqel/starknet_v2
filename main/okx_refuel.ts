@@ -96,10 +96,8 @@ async function main() {
 
     try {
         for(let starkAddress in dataJson) {
-            (async() => {
-                const wdId = await okx.withdrawal(starkAddress, config.okx_amount)
-                logger.success(`Средства отправлены`, starkAddress)
-            })()
+            const wdId = await okx.withdrawal(starkAddress, config.okx_amount)
+            logger.success(`Средства отправлены`, starkAddress)
             await sleep(config.okx_sleep_min, config.okx_sleep_max)
         }
     } catch(e: any) {
