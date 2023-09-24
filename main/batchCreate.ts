@@ -1,11 +1,29 @@
 import { config } from "../cfg"
 import { logger } from "../logger/logger"
+import { input } from "../utils/querys";
 import { MyAccounts } from "../wallets/myAccounts"
+import { prompt } from 'enquirer';
 
 async function main() {
-    logger.info(`Создаем ${config.batch_create_number} аккаунтов старкнет`)
+    let answer = await input('Введите количество кошельков')
+    let wallet_number = 0
+
+    try {
+        wallet_number = parseInt(answer!)
+    } catch(e) {
+        logger.error(`Не удалось создать кошельки. Введенное число ${wallet_number}`)
+        return
+    }
+
+    if(Number.isNaN(wallet_number)) {
+        logger.error(`Введенно неверное количество кошельков ${answer}`)
+        return
+    }
+
+    logger.info(`Создаем ${answer} аккаунтов старкнет`)
+
     const myAccounts = new MyAccounts()
-    myAccounts.batchCreate(config.batch_create_number)
+    myAccounts.batchCreate(wallet_number)
     return
 }
 
