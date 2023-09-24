@@ -115,7 +115,9 @@ export class Myswap extends Dex {
 
         try {
             const receipt = await this.sendTransaction(contract, "swap", callData)
-            logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
+            const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
+            const prettyAmountOut = ethers.formatUnits(minAmountIn, tokenTo.decimals)
+            logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
         }

@@ -5,6 +5,7 @@ import { Dex, l0_or_jediSWAP } from '../../dex';
 import { logger } from "../../../logger/logger";
 import { Token } from "../../tokens/tokens";
 import { Iconfig } from "../../../interfaces/iconfig";
+import { ethers } from "ethers";
 
 export class L0kswap extends l0_or_jediSWAP {
 
@@ -43,7 +44,9 @@ export class L0kswap extends l0_or_jediSWAP {
 
         try {
             const receipt = await this.sendTransaction(contract, 'swapExactTokensForTokens', callData)
-            logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
+            const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
+            const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
+            logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
         }

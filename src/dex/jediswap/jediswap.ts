@@ -45,7 +45,9 @@ export class Jediswap extends l0_or_jediSWAP {
 
         try {
             const receipt = await this.sendTransaction(contract, 'swap_exact_tokens_for_tokens', callData)
-            logger.success(`Выполнен свап ${receipt.transaction_hash}`, this.account.address, this.taskName)
+            const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
+            const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
+            logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
         }
