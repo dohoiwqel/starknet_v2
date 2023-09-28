@@ -152,11 +152,13 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(usdtBalance < formatDepositValue) {
 
-            let needToSwapUSDC = formatDepositValue - usdtBalance
+            //let needToSwapUSDC = formatDepositValue - usdtBalance
+            let needToSwapUSDC = formatDepositValue
             let percent = needToSwapUSDC * 20n/100n
             needToSwapUSDC += percent
             
             if(usdcBalance > formatDepositValue && needToSwapUSDC > 0n && needToSwapUSDC < usdcBalance) {
+                console.log(needToSwapUSDC)
                 await this.swap(needToSwapUSDC, this.tokens.USDC, this.tokens.USDT, slippage)
                 return
             }
@@ -178,11 +180,13 @@ export class Jediswap extends l0_or_jediSWAP {
 
         if(usdcBalance < formatDepositValue) {
 
-            let needToSwapUSDT = formatDepositValue - usdcBalance
+            // let needToSwapUSDT = formatDepositValue - usdcBalance
+            let needToSwapUSDT = formatDepositValue
             let percent = needToSwapUSDT * 20n/100n
             needToSwapUSDT += percent
             
             if(usdtBalance > formatDepositValue && needToSwapUSDT > 0n && needToSwapUSDT < usdtBalance) {
+                console.log(needToSwapUSDT)
                 await this.swap(needToSwapUSDT, this.tokens.USDT, this.tokens.USDC, slippage)
                 return
             }
