@@ -65,6 +65,9 @@ export class Protocol {
     }
 
     protected async approve(token: Token, amount: uint256.Uint256, spender: string): Promise<void> {
+        
+        logger.info(`Выполняем аппрув ${token.ticker}`, this.account.address, this.taskName)
+
         const contractAddress = token.contractAddress
         const ABI = token.ABI
         const contract = new Contract(ABI, contractAddress, this.account)        
@@ -76,7 +79,7 @@ export class Protocol {
 
         try {
             const receipt = await this.sendTransaction(contract, "approve", callData)
-            logger.success(`Выполнен аппрув ${receipt.transaction_hash}`, this.account.address, this.taskName)
+            logger.success(`Выполнен аппрув tx: ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
 

@@ -12,9 +12,9 @@ export async function refuelEth(account: Account, refuelThreshold: string, slipp
 
     const finder = new Finder(account)
     const {eToken, eBalance} = await finder.getEth()
-    const {token, balance} = await finder.getHighestBalanceToken()
 
     if(eBalance < formatRefuelThreshold) {
+        const {token, balance} = await finder.getHighestBalanceToken()
 
         const ethPrice = BigInt(await getEthPrice())
         const needToSwapEth = formatRefuelThreshold - eBalance

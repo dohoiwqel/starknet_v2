@@ -19,10 +19,15 @@ export async function task_mySwap(account: Account, config: Iconfig) {
 
     const mySwap = new Myswap(account, "mySwap")
     const finder = new Finder(account)
+    let stableSwap = config.stableSwap
 
-    if(config.stableSwap) {
-        //Поиск стейблкоина с максимальным балансом
-        let {token, balance} = await finder.getHighestBalanceToken()
+    let {token, balance} = await finder.getHighestBalanceToken()
+    
+    if(token.ticker === 'ETH') {
+        stableSwap = false
+    }
+
+    if(stableSwap) {
 
         if(config.stableSwap_full_balance === false) {
             const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
@@ -70,12 +75,16 @@ export async function task_10kSwap(account: Account, config: Iconfig): Promise<v
 
     const l0kSwap = new L0kswap(account, "10kSwap")
     const finder = new Finder(account)
+    let stableSwap = config.stableSwap
 
-    if(config.stableSwap) {
+    let {token, balance} = await finder.getHighestBalanceToken()
+    
+    if(token.ticker === 'ETH') {
+        stableSwap = false
+    }
+
+    if(stableSwap) {
         
-        //Поиск стейблкоина с максимальным балансом
-        let {token, balance} = await finder.getHighestBalanceToken()
-
         if(config.stableSwap_full_balance === false) {
             const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
             balance = ethers.parseUnits(stableAmount.toString(), token.decimals)
@@ -116,12 +125,16 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
 
     const jediSwap = new Jediswap(account, "jediSwap")
     const finder = new Finder(account)
+    let stableSwap = config.stableSwap
 
-    if(config.stableSwap) {
+    let {token, balance} = await finder.getHighestBalanceToken()
+    
+    if(token.ticker === 'ETH') {
+        stableSwap = false
+    }
+
+    if(stableSwap) {
         
-        //Поиск стейблкоина с максимальным балансом
-        let {token, balance} = await finder.getHighestBalanceToken()
-
         if(config.stableSwap_full_balance === false) {
             const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
             balance = ethers.parseUnits(stableAmount.toString(), token.decimals)
