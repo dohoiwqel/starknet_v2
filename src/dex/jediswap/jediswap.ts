@@ -49,7 +49,7 @@ export class Jediswap extends l0_or_jediSWAP {
             const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
             logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
-            logger.error(`Не удалось выполнить свап ${e}`, this.account.address, this.taskName)
+            logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
         }
     }
 
