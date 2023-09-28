@@ -1,4 +1,4 @@
-import { Contract, uint256 } from "starknet";
+import { Contract, EstimateFeeResponse, uint256 } from "starknet";
 import { contractABI } from './contractABI';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { l0_or_jediSWAP } from '../../dex';
@@ -31,14 +31,6 @@ export class L0kswap extends l0_or_jediSWAP {
             deadline
         ]
 
-        // console.log([
-        //     amountIn, 
-        //     amountOut,
-        //     path,
-        //     to,
-        //     deadline
-        // ])
-
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
         try {
@@ -47,11 +39,18 @@ export class L0kswap extends l0_or_jediSWAP {
             const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
             logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
+            console.log([
+                amountIn, 
+                amountOut,
+                path,
+                to,
+                deadline
+            ])
             logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
         }
     }
 
-    async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
+    async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber): Promise<EstimateFeeResponse> {
         const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
 
         if(amountIn > allowance) {
@@ -73,7 +72,15 @@ export class L0kswap extends l0_or_jediSWAP {
 
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
-        return await contract.estimate('swapExactTokensForTokens', callData)
+        try {
+            return await contract.estimate('swapExactTokensForTokens', callData)
+        } catch(e: any) {
+            if(e.message && e.message.includes('nonce')) {
+                return await this.getExecutionFee(amountIn, tokenFrom, tokenTo, slippage)
+            } else {
+                throw e
+            }
+        }
     }
 
     async refuelETH(slippage: number) {

@@ -33,14 +33,6 @@ export class Jediswap extends l0_or_jediSWAP {
             deadline
         ]
 
-        // console.log([
-        //     amountIn, 
-        //     amountOut,
-        //     path,
-        //     to,
-        //     deadline
-        // ], 'НА СВАПЕ')
-
         const contract = new Contract(this.ABI, this.contractAddress, this.account) 
 
         try {
@@ -49,6 +41,14 @@ export class Jediswap extends l0_or_jediSWAP {
             const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
             logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
+            console.log([
+                amountIn, 
+                amountOut,
+                path,
+                to,
+                deadline
+            ], 'НА СВАПЕ')
+            
             logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
         }
     }
@@ -231,23 +231,23 @@ export class Jediswap extends l0_or_jediSWAP {
             deadline
         ]
 
-        // console.log([
-        //     this.tokens.USDT.contractAddress,
-        //     this.tokens.USDC.contractAddress,
-        //     amountA,
-        //     amountB,
-        //     amountA * 995n/1000n,
-        //     amountB * 995n/1000n,
-        //     this.account.address,
-        //     deadline
-        // ])
-
         const contract = new Contract(this.ABI, this.contractAddress, this.account)
 
         try {
             const receipt = await this.sendTransaction(contract, "add_liquidity", callData)
             logger.success(`Залили ликвидность в JediSwap ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
+            console.log([
+                this.tokens.USDT.contractAddress,
+                this.tokens.USDC.contractAddress,
+                amountA,
+                amountB,
+                amountA * 995n/1000n,
+                amountB * 995n/1000n,
+                this.account.address,
+                deadline
+            ])
+            
             logger.error(`Не удалось залить ликвидность в Jediswap ${e}`, this.account.address, this.taskName)
         }
     }
