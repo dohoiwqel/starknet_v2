@@ -2,17 +2,20 @@ import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpE
 import { logger } from "../logger/logger";
 import { sleep } from "../utils/utils";
 import { Token, Tokens } from "./tokens/tokens";
+import { Finder } from "./finder";
 
 export class Protocol {
 
     protected account: Account
     public taskName: string
     protected tokens: Tokens
+    protected finder: Finder
 
     constructor(account: Account, taskName: string) {
         this.account = account
         this.taskName = taskName
         this.tokens = new Tokens()
+        this.finder = new Finder(this.account)
     }
 
     protected async waitForTransaction(tx: string): Promise<GetTransactionReceiptResponse> {

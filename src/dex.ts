@@ -10,8 +10,6 @@ import { sleep } from "../utils/utils"
 
 export class Dex extends Protocol{
 
-    protected finder = new Finder(this.account)
-
     getTokenTo(tokenFrom: Token) {
         const tokens = this.tokens.getIterator()
         return tokenFrom.contractAddress === tokens[0].contractAddress? tokens[1]: tokens[0]
