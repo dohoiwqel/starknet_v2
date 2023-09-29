@@ -1,4 +1,4 @@
-import { Contract, uint256 } from 'starknet'
+import { Contract, EstimateFeeResponse, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
@@ -53,29 +53,37 @@ export class Jediswap extends l0_or_jediSWAP {
         }
     }
 
-    async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
+    async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber): Promise<EstimateFeeResponse> {
+        try {
+            const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
         
-        if(amountIn > allowance) {
-            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            if(amountIn > allowance) {
+                await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            }
+    
+            const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)
+            const path = [tokenFrom.contractAddress, tokenTo.contractAddress]
+            const to = this.account.address
+            const deadline = String(Math.round(Date.now() / 1000 + 3600));
+    
+            const callData = [
+                uint256.bnToUint256(amountIn), 
+                uint256.bnToUint256(amountOut),
+                path,
+                to,
+                deadline
+            ]
+    
+            const contract = new Contract(this.ABI, this.contractAddress, this.account) 
+            
+            return await contract.estimate('swap_exact_tokens_for_tokens', callData)
+        } catch(e: any) {
+            if(e.message && e.message.includes('nonce')) {
+                return await this.getExecutionFee(amountIn, tokenFrom, tokenTo, slippage)
+            } else {
+                throw e
+            }
         }
-
-        const amountOut = await this.calculateAmountOut(amountIn, tokenFrom, tokenTo, slippage)
-        const path = [tokenFrom.contractAddress, tokenTo.contractAddress]
-        const to = this.account.address
-        const deadline = String(Math.round(Date.now() / 1000 + 3600));
-
-        const callData = [
-            uint256.bnToUint256(amountIn), 
-            uint256.bnToUint256(amountOut),
-            path,
-            to,
-            deadline
-        ]
-
-        const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-        
-        return await contract.estimate('swap_exact_tokens_for_tokens', callData)
     }
 
     private async getRatio() {

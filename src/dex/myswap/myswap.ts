@@ -1,4 +1,4 @@
-import { Contract, uint256 } from 'starknet'
+import { Contract, EstimateFeeResponse, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
@@ -129,28 +129,36 @@ export class Myswap extends Dex {
         }
     }
 
-    async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber) {
-        const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
+    async getExecutionFee(amountIn: bigint, tokenFrom: Token, tokenTo: Token, slippage: denomNumber): Promise<EstimateFeeResponse> {
+        try {
+            const allowance = await this.getAllowance(tokenFrom, this.contractAddress)
         
-        if(amountIn > allowance) {
-            await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            if(amountIn > allowance) {
+                await this.approve(tokenFrom, uint256.bnToUint256(amountIn), this.contractAddress)
+            }
+    
+            const poolId = this.getPoolId(tokenFrom, tokenTo)
+            const ratio = await this.getRatio(tokenFrom, tokenTo)
+    
+            let minAmountOut = amountIn * BigInt(ratio.nominator) / BigInt(ratio.denominator)
+            minAmountOut = await this.calculateMinAmountIn(amountIn, tokenFrom, tokenTo, slippage)
+    
+            const callData = [
+                poolId, 
+                tokenFrom.contractAddress,
+                uint256.bnToUint256(amountIn),
+                uint256.bnToUint256(minAmountOut),
+            ]
+    
+            const contract = new Contract(this.ABI, this.contractAddress, this.account) 
+            return await contract.estimate('swap', callData)
+        } catch(e: any) {
+            if(e.message && e.message.includes('nonce')) {
+                return await this.getExecutionFee(amountIn, tokenFrom, tokenTo, slippage)
+            } else {
+                throw e
+            }
         }
-
-        const poolId = this.getPoolId(tokenFrom, tokenTo)
-        const ratio = await this.getRatio(tokenFrom, tokenTo)
-
-        let minAmountOut = amountIn * BigInt(ratio.nominator) / BigInt(ratio.denominator)
-        minAmountOut = await this.calculateMinAmountIn(amountIn, tokenFrom, tokenTo, slippage)
-
-        const callData = [
-            poolId, 
-            tokenFrom.contractAddress,
-            uint256.bnToUint256(amountIn),
-            uint256.bnToUint256(minAmountOut),
-        ]
-
-        const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-        return await contract.estimate('swap', callData)
     }
 
     async refuelETH(slippage: number) {
