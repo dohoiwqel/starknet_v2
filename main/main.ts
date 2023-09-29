@@ -1,8 +1,8 @@
 import { Account, HttpError, Provider, constants } from "starknet";
 import { Iconfig } from '../interfaces/iconfig';
-import { MyAccounts } from '../wallets/myAccounts';
+import { MyAccounts } from '../src/wallets/myAccounts';
 import { logger } from "../logger/logger";
-import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
+import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
 import { config } from "../cfg";
 import { getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
 import { refuelEth } from "../utils/refuel";
@@ -37,6 +37,7 @@ function shuffleTask(tasks: Array<Task>) {
     //Добавляем элементы, которые должны идти обязательно на заданных местах
     if(config.upgrade) shuffledArr.unshift(task_upgrade_implementation);
     if(config.orbiter_to_evm) shuffledArr.push(task_orbiter_to_evm)
+    if(config.okx_deposit) shuffledArr.push(task_okx_deposit)
 
     return shuffledArr;
 }
@@ -116,6 +117,17 @@ async function main() {
                 }
 
                 config.orbiter_to_evm_address = evmAddress
+            }
+
+            if(shuffledTasks.includes(task_okx_deposit)) {
+                const okx_subAcc = dataJson[account.address].okxAccount
+
+                if(!okx_subAcc) {
+                    logger.error('Заполните OKX аддресса в data.json')
+                    return
+                }
+
+                config.okx_deposit_address = okx_subAcc
             }
 
             await startTasks(shuffledTasks, account, config)

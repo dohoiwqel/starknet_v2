@@ -4,11 +4,14 @@ export const config: Iconfig = {
 
     //OKX
     okx_apiKey: '',
-    okx_passPhrase: '',
     okx_secretKey: '',
-    okx_amount: '0.001',
+    okx_passPhrase: '!',
+    okx_withdraw_amount: '0.009',
     okx_sleep_min: 5,
     okx_sleep_max: 10,
+
+    //В конце пути ВСЕ средства будут конвертированы в ETH и отправлены на соотвествующий субаккаунт OKX
+    okx_deposit: true,
 
     /* Ощиие настройки */
     minGasPrice: 100, //Минимальный газ при котором софт начнет работу в GWEI прим. 100 = 100gwei
@@ -27,7 +30,7 @@ export const config: Iconfig = {
     jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
 
     /* Бридж ИЗ старкнета в arbitrum, использця orbiter */
-    orbiter_to_evm: true,
+    orbiter_to_evm: false,
     orbiter_amount: "0", //Если 0, то выполнит трансфер всего эфира на кошельке
     orbiter_to_network: 'arbitrum',
     

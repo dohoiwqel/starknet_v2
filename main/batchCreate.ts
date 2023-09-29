@@ -1,6 +1,6 @@
 import { logger } from "../logger/logger"
 import { input } from "../utils/querys";
-import { MyAccounts } from "../wallets/myAccounts"
+import { MyAccounts } from "../src/wallets/myAccounts"
 
 async function main() {
     let answer = await input('Введите количество кошельков')

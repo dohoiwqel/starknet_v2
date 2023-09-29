@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import { read } from '../utils/utils'
-import { MyAccounts } from '../wallets/myAccounts'
+import { MyAccounts } from '../src/wallets/myAccounts'
 import { Provider, constants } from 'starknet'
 import * as querys from './querys'
 import { logger } from '../logger/logger'

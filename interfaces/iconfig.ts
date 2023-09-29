@@ -26,7 +26,9 @@ export interface Iconfig {
     okx_apiKey: string,
     okx_passPhrase: string,
     okx_secretKey: string,
-    okx_amount: string,
+    okx_withdraw_amount: string,
     okx_sleep_min: number,
     okx_sleep_max: number,
+    okx_deposit_address?: string,
+    okx_deposit: boolean,
 }

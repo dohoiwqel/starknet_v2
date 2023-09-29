@@ -12,6 +12,7 @@ import { UpgradeImplementation } from "./Upgrade/upgrade";
 import { getRandomInt } from "../utils/utils";
 import { Orbiter } from "./orbiter/orbiter";
 import { Iconfig } from "../interfaces/iconfig";
+import { OKX } from "./okx/okx_protocol";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>
 
@@ -210,4 +211,14 @@ export async function task_orbiter_to_evm(account: Account, config: Iconfig) {
 
     const orbiter = new Orbiter(account, 'orbiterToEvm')
     await orbiter.bridge(ethers.parseEther(config.orbiter_amount), config.orbiter_to_network, config.orbiter_to_evm_address)
+}
+
+export async function task_okx_deposit(account: Account, config: Iconfig) {
+    const okx = new OKX(account, config.okx_apiKey, config.okx_passPhrase, config.okx_secretKey)
+
+    if(!config.okx_deposit_address) {
+        throw logger.error('Не указан OKX аддресс', account.address)
+    }
+
+    await okx.deposit(config.okx_deposit_address)
 }

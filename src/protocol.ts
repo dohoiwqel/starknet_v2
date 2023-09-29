@@ -3,6 +3,9 @@ import { logger } from "../logger/logger";
 import { sleep } from "../utils/utils";
 import { Token, Tokens } from "./tokens/tokens";
 import { Finder } from "./finder";
+// import { Jediswap } from "./dex/jediswap/jediswap";
+import { makeDenominator } from "./denominator";
+import { config } from "../cfg";
 
 export class Protocol {
 
@@ -91,11 +94,18 @@ export class Protocol {
                 return await this.approve(token, amount, spender)
             }
         }
-
     }
 
-    protected async estimateFee(contract: Contract, method: string, callData: Array<any>) {
-        const feeResponse = await contract.estimate(method, callData)
-        return feeResponse.overall_fee
+    protected async estimateFee(contract: Contract, method: string, callData: Array<any>): Promise<bigint> {
+        try {
+            const feeResponse = await contract.estimate(method, callData)
+            return feeResponse.overall_fee
+        } catch(e: any) {
+            if(e.message && e.message.includes('nonce')) {
+                return await this.estimateFee(contract, method, callData)
+            } else {
+                throw e
+            }
+        }
     }
 }
