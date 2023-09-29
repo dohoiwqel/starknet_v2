@@ -11,7 +11,7 @@ export const config: Iconfig = {
     okx_sleep_max: 10,
 
     //В конце пути ВСЕ средства будут конвертированы в ETH и отправлены на соотвествующий субаккаунт OKX
-    okx_deposit: true,
+    okx_deposit: false,
 
     /* Ощиие настройки */
     minGasPrice: 100, //Минимальный газ при котором софт начнет работу в GWEI прим. 100 = 100gwei
@@ -45,7 +45,7 @@ export const config: Iconfig = {
     mySwap: false,
     dmail: false, 
 
-    slippage: 1, //Проскальзывание в процентах 1 = 1%
+    slippage: 2, //Проскальзывание в процентах 1 = 1%
 
     stableSwap: true, //Если включено обменивает ТОЛЬКО стейблы иначе обменивает ETH на стейбл
     stableSwap_full_balance: true, //Если включено обменивает весь доступный баланс стейблов
