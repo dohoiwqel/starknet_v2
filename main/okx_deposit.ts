@@ -27,6 +27,10 @@ async function main() {
         }
     
         const okx_subAcc = okxAddresses[i]
+        
+        if(!okx_subAcc.startsWith('0x')) {
+            throw logger.error(`Введен неправильный адрес суб-аккаунта ${okx_subAcc}`)
+        }
     
         if(!okx_subAcc) {
             logger.error('Заполните OKX аддресса')
