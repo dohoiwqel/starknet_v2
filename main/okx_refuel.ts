@@ -1,9 +1,11 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import { config } from '../cfg';
-import { create_data } from '../accountManager/accountManager';
 import { logger } from '../logger/logger';
-import { sleep } from '../utils/utils';
+import { read, sleep } from '../utils/utils';
+import path from 'path'
+import { MyAccounts } from '../src/wallets/myAccounts';
+import { Provider, constants } from 'starknet';
 
 class OKX {
     public headers: any = {}
@@ -91,12 +93,17 @@ class OKX {
 
 async function main() {
     
-    let dataJson = await create_data()
+    const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
+    const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+
     const okx = new OKX(config.okx_apiKey, config.okx_passPhrase, config.okx_secretKey)
 
     try {
-        for(let starkAddress in dataJson) {
-            const wdId = await okx.withdrawal(starkAddress, config.okx_amount)
+        for(let privateKeyOrMnemonic in privates) {
+            const myAccounts = new MyAccounts(provider)
+            const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
+            const starkAddress = account.address
+            const wdId = await okx.withdrawal(starkAddress, config.okx_withdraw_amount)
             logger.success(`Средства отправлены`, starkAddress)
             await sleep(config.okx_sleep_min, config.okx_sleep_max)
         }

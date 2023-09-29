@@ -8,9 +8,9 @@
     "main": "ts-node main/main.ts",
     "starkgate_bridge": "ts-node main/starkgateBridge.ts",
     "starkgate_fee": "ts-node main/starkgateShowFee.ts",
-    "okx_refuel": "ts-node main/okx_refuel",
-    "help": "ts-node main/help",
-    "create_data": "ts-node main/accountManager"
+    "okx_refuel": "ts-node main/okx_refuel.ts",
+    "okx_deposit": "ts-node main/okx_deposit.ts",
+    "help": "ts-node main/help.ts"
   },
   "author": "",
   "license": "ISC",

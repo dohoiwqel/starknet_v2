@@ -129,7 +129,7 @@ async function main() {
                 const okx_subAcc = okxAddresses[i]
 
                 if(!okx_subAcc) {
-                    logger.error('Заполните OKX аддресса в data.json')
+                    logger.error('Заполните OKX аддресса')
                     return
                 }
 
