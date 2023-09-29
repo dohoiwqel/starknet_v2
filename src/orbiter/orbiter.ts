@@ -9,6 +9,7 @@ import { task_jediSwap } from "../tasks";
 import { Jediswap } from "../dex/jediswap/jediswap";
 import { config } from "../../cfg";
 import { makeDenominator } from "../denominator";
+import { sleep } from "../../utils/utils";
 
 
 /**
@@ -62,6 +63,7 @@ export class Orbiter extends Protocol {
             const jediSwap = new Jediswap(this.account, this.taskName)
             const slippage = makeDenominator(config.slippage)
             await jediSwap.swap(balance, token, this.tokens.ETH, slippage)
+            await sleep(8, 8)
             return await this.convertAllTokensToEth()
         }
     }
