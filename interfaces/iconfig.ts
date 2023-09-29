@@ -30,5 +30,5 @@ export interface Iconfig {
     okx_sleep_min: number,
     okx_sleep_max: number,
     okx_deposit_address?: string,
-    okx_deposit: boolean,
+    okx_deposit?: boolean,
 }

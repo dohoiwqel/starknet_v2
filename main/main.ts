@@ -36,7 +36,7 @@ function shuffleTask(tasks: Array<Task>) {
     //Добавляем элементы, которые должны идти обязательно на заданных местах
     if(config.upgrade) shuffledArr.unshift(task_upgrade_implementation);
     if(config.orbiter_to_evm) shuffledArr.push(task_orbiter_to_evm)
-    if(config.okx_deposit) shuffledArr.push(task_okx_deposit)
+    // if(config.okx_deposit) shuffledArr.push(task_okx_deposit)
 
     return shuffledArr;
 }
