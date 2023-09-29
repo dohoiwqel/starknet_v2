@@ -8,7 +8,6 @@ import { getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/u
 import { refuelEth } from "../utils/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
-import { create_data } from "../accountManager/accountManager";
 
 function getTasks(config: Iconfig) {
     let tasks = new Array<Task>
@@ -83,11 +82,8 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
 
 async function main() {
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
-    let dataJson = await create_data()
-
-    if(!dataJson) {
-        return
-    }
+    const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
+    const ethPrivates = await read(path.resolve(__dirname, '..', 'ethPrivates.txt'))
     
     logger.success('Данные успешно загружены')
 
@@ -109,7 +105,12 @@ async function main() {
             showTasks(shuffledTasks, account.address)
 
             if(shuffledTasks.includes(task_orbiter_to_evm)) {
-                const evmAddress = dataJson[account.address].ethAcoount
+
+                if(privates.length !== okxAddresses.length) {
+                    throw logger.error('Количество кошельков Starknet должно быть равно количеству ETH аддрессов')
+                }
+
+                const evmAddress = ethPrivates[i]
 
                 if(!evmAddress) {
                     logger.error('Заполните evm аддресса в data.json')
@@ -120,7 +121,12 @@ async function main() {
             }
 
             if(shuffledTasks.includes(task_okx_deposit)) {
-                const okx_subAcc = dataJson[account.address].okxAccount
+
+                if(privates.length !== okxAddresses.length) {
+                    throw logger.error('Количество кошельков Starknet должно быть равно количеству субаккаунтов OKX')
+                }
+
+                const okx_subAcc = okxAddresses[i]
 
                 if(!okx_subAcc) {
                     logger.error('Заполните OKX аддресса в data.json')
