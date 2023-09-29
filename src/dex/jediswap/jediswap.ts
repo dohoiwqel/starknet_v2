@@ -242,8 +242,8 @@ export class Jediswap extends l0_or_jediSWAP {
                 this.tokens.USDC.contractAddress,
                 amountA,
                 amountB,
-                amountA * 995n/1000n,
-                amountB * 995n/1000n,
+                amountA * 98n/1000n,
+                amountB * 98n/1000n,
                 this.account.address,
                 deadline
             ])

@@ -23,7 +23,7 @@ export const config: Iconfig = {
     upgrade: false,
 
     /* Предоставление ликвидности в jediSwap */
-    jediSwap_liq: false,
+    jediSwap_liq: true,
     jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
 
     /* Бридж ИЗ старкнета в arbitrum, использця orbiter */
