@@ -7,6 +7,7 @@ import { Jediswap } from "../dex/jediswap/jediswap"
 import { makeDenominator } from "../denominator"
 import { config } from "../../cfg"
 import { ethers } from "ethers"
+import { sleep } from "../../utils/utils"
 
 export class OKX extends Protocol {
     
@@ -27,12 +28,6 @@ export class OKX extends Protocol {
         this.rest = 'https://www.okx.com'
     }
 
-    private generateHmacSha256Signature(data: string, key: string): string {
-        const hmac = crypto.createHmac('sha256', key);
-        hmac.update(data);
-        return hmac.digest('base64');
-    }
-
     private async convertAllTokensToEth(): Promise<any> {
         const {token, balance} = await this.finder.getHighestBalanceToken()
 
@@ -42,6 +37,7 @@ export class OKX extends Protocol {
             const jediSwap = new Jediswap(this.account, this.taskName)
             const slippage = makeDenominator(config.slippage)
             await jediSwap.swap(balance, token, this.tokens.ETH, slippage)
+            await sleep(5, 5)
             return await this.convertAllTokensToEth()
         }
     }

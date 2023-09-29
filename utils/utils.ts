@@ -67,3 +67,7 @@ export async function getEthGasPrice(ethProvider: JsonRpcApiProvider) {
     gasPrice! += ethers.parseUnits("2", 'gwei')
     return gasPrice
 }
+
+export function getRandomFloat(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+}

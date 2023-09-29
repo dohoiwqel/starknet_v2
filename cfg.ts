@@ -5,8 +5,8 @@ export const config: Iconfig = {
     //OKX
     okx_apiKey: '',
     okx_secretKey: '',
-    okx_passPhrase: '!',
-    okx_withdraw_amount: '0.009',
+    okx_passPhrase: '',
+    okx_withdraw_amount: [0.01, 0.03],
     okx_sleep_min: 5,
     okx_sleep_max: 10,
 

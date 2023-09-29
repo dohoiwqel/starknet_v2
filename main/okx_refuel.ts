@@ -2,7 +2,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import { config } from '../cfg';
 import { logger } from '../logger/logger';
-import { read, sleep } from '../utils/utils';
+import { getRandomFloat, read, sleep } from '../utils/utils';
 import path from 'path'
 import { MyAccounts } from '../src/wallets/myAccounts';
 import { Provider, constants } from 'starknet';
@@ -99,11 +99,11 @@ async function main() {
     const okx = new OKX(config.okx_apiKey, config.okx_passPhrase, config.okx_secretKey)
 
     try {
-        for(let privateKeyOrMnemonic in privates) {
+        for(let privateKeyOrMnemonic of privates) {
             const myAccounts = new MyAccounts(provider)
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
             const starkAddress = account.address
-            const wdId = await okx.withdrawal(starkAddress, config.okx_withdraw_amount)
+            const wdId = await okx.withdrawal(starkAddress, getRandomFloat(config.okx_withdraw_amount[0], config.okx_withdraw_amount[1]).toString())
             logger.success(`Средства отправлены`, starkAddress)
             await sleep(config.okx_sleep_min, config.okx_sleep_max)
         }
