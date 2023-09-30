@@ -5,7 +5,7 @@ import { logger } from "../logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
 import { config } from "../cfg";
 import { getProvider, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
-import { refuelEth } from "../utils/refuel";
+import { refuelEth } from "../src/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
 

@@ -129,6 +129,8 @@ export class Jediswap extends l0_or_jediSWAP {
     }
 
     private async checkAddLiquidity(depositValue: number, slippage: denomNumber) {
+
+        depositValue = depositValue*1.05
         
         //Проверки на наличие достоточного количество USDT USDC
         const usdtBalance = await this.getBalanceOf(this.tokens.USDT)
@@ -166,7 +168,6 @@ export class Jediswap extends l0_or_jediSWAP {
             needToSwapUSDC += percent
             
             if(usdcBalance > formatDepositValue && needToSwapUSDC > 0n && needToSwapUSDC < usdcBalance) {
-                console.log(needToSwapUSDC)
                 await this.swap(needToSwapUSDC, this.tokens.USDC, this.tokens.USDT, slippage)
                 return
             }
@@ -194,7 +195,6 @@ export class Jediswap extends l0_or_jediSWAP {
             needToSwapUSDT += percent
             
             if(usdtBalance > formatDepositValue && needToSwapUSDT > 0n && needToSwapUSDT < usdtBalance) {
-                console.log(needToSwapUSDT)
                 await this.swap(needToSwapUSDT, this.tokens.USDT, this.tokens.USDC, slippage)
                 return
             }

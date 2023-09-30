@@ -3,7 +3,7 @@ import { getProvider, read } from '../utils/utils'
 import { logger } from '../logger/logger'
 import { MyAccounts } from '../src/wallets/myAccounts'
 import { Provider, constants } from 'starknet'
-import { refuelEth } from '../utils/refuel'
+import { refuelEth } from '../src/refuel'
 import { config } from '../cfg'
 import { task_okx_deposit } from '../src/tasks'
 
