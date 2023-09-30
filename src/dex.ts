@@ -1,12 +1,8 @@
-import { Account, Contract, HttpError, Provider, SequencerProvider, TransactionStatus, constants, uint256 } from "starknet"
 import { denomNumber } from "./denominator"
 import { getEthPrice } from "./dex/oracles/oracle"
 import { ethers } from "ethers"
-import { logger } from "../logger/logger"
-import { Token, Tokens } from "./tokens/tokens"
+import { Token } from "./tokens/tokens"
 import { Protocol } from "./protocol"
-import { Finder } from "./finder"
-import { sleep } from "../utils/utils"
 
 export class Dex extends Protocol{
 

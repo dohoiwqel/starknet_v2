@@ -1,11 +1,8 @@
-import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpError, SequencerProvider, TransactionStatus, Uint256, constants, uint256 } from "starknet";
+import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpError, TransactionStatus, uint256 } from "starknet";
 import { logger } from "../logger/logger";
-import { sleep } from "../utils/utils";
+import { getProvider, sleep } from "../utils/utils";
 import { Token, Tokens } from "./tokens/tokens";
 import { Finder } from "./finder";
-// import { Jediswap } from "./dex/jediswap/jediswap";
-import { makeDenominator } from "./denominator";
-import { config } from "../cfg";
 
 export class Protocol {
 
@@ -23,21 +20,25 @@ export class Protocol {
 
     protected async waitForTransaction(tx: string): Promise<GetTransactionReceiptResponse> {
         try {
-            const provider = new SequencerProvider({ baseUrl: constants.BaseUrl.SN_MAIN })
+            const provider = getProvider()
             const response = await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
             
             if(response.status === 'ACCEPTED_ON_L2') {
                 return response
             
             } else if(response.status === 'REJECTED') {
-                throw `Не удалось послать транзакцию ${response.transaction_hash}`;
-            }
-             else {
+                throw new Error(`Не удалось послать транзакцию ${response.transaction_hash}`);
+
+            } else {
                 return await this.waitForTransaction(tx)
             }
         } catch(e: any) {
-            return await this.waitForTransaction(tx)
-            // console.log('DEV: ошибка с ожиданием транзакции')
+
+            if(e.message && e.message.includes('Не удалось послать транзакцию')) {
+                throw logger.error(e.message)
+            } else {
+                return await this.waitForTransaction(tx)
+            }
         }
     }
 

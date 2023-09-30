@@ -4,7 +4,7 @@ import { MyAccounts } from '../src/wallets/myAccounts';
 import { logger } from "../logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
 import { config } from "../cfg";
-import { getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
+import { getProvider, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
 import { refuelEth } from "../utils/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
@@ -87,7 +87,8 @@ async function main() {
     
     logger.success('Данные успешно загружены')
 
-    const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+    let provider: Provider = getProvider()
+    // console.log((await provider.getBlock('latest')).gas_price)
 
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
 

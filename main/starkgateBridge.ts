@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { Starkgate } from "../src/Starkgate/starkgate"
-import { getEthGasPrice, read, sleep, waitForGas } from "../utils/utils"
+import { getEthGasPrice, getProvider, read, sleep, waitForGas } from "../utils/utils"
 import { MyAccounts } from "../src/wallets/myAccounts"
 import { Provider, constants } from "starknet"
 import { logger } from "../logger/logger"
@@ -13,7 +13,7 @@ async function main() {
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
     const ethPrivates = await read(path.resolve(__dirname, '..', 'ethPrivates.txt'))
     
-    const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+    const provider = getProvider()
 
     const starkgate = new Starkgate()
     const myAccounts = new MyAccounts(provider)

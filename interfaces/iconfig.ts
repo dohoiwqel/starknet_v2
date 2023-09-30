@@ -31,4 +31,5 @@ export interface Iconfig {
     okx_sleep_max: number,
     okx_deposit_address?: string,
     okx_deposit?: boolean,
+    rpc_url?: string,
 }

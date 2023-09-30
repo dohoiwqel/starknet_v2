@@ -1,7 +1,8 @@
 import readline from 'readline'
 import * as fs from 'fs'
-import { Account } from 'starknet';
+import { Account, Provider, constants } from 'starknet';
 import { JsonRpcApiProvider, ethers } from 'ethers';
+import { config } from '../cfg';
 
 export function sleep(sleep_min: number, sleep_max: number) {
     const seconds = getRandomInt(sleep_min, sleep_max) 
@@ -47,8 +48,10 @@ export function getRandomElementFromArray(fromArray: any[], n: number, mutableAr
 
 export async function waitForGas(account: Account, minGasPrice: number) {
     let gasPrice: number
+    const provider = new Provider({ sequencer: { baseUrl: constants.BaseUrl.SN_MAIN } })
+
     while(true) {
-        const block = await account.getBlock("latest")
+        const block = await provider.getBlock("latest")
         gasPrice = Math.round(Number(ethers.formatUnits(block.gas_price!, "gwei")))
         if(gasPrice > minGasPrice) {
             console.log(`Ждем пока газ опустится до ${minGasPrice}. Текущий газ ${gasPrice} Gwei`)
@@ -70,4 +73,16 @@ export async function getEthGasPrice(ethProvider: JsonRpcApiProvider) {
 
 export function getRandomFloat(min: number, max: number): number {
     return Math.random() * (max - min) + min;
+}
+
+export function getProvider() {
+    let provider: Provider
+    
+    if(config.rpc_url) {
+        provider = new Provider({rpc: {nodeUrl: config.rpc_url} })
+    } else {
+        const provider = new Provider({ sequencer: { baseUrl: constants.NetworkName.SN_MAIN } })
+    }
+
+    return provider!
 }

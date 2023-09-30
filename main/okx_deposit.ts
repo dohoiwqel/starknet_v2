@@ -1,5 +1,5 @@
 import path from 'path'
-import { read } from '../utils/utils'
+import { getProvider, read } from '../utils/utils'
 import { logger } from '../logger/logger'
 import { MyAccounts } from '../src/wallets/myAccounts'
 import { Provider, constants } from 'starknet'
@@ -10,10 +10,9 @@ import { task_okx_deposit } from '../src/tasks'
 async function main() {
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
     const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
+    const provider = getProvider()
     
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
-
-        const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
 
         const myAccounts = new MyAccounts(provider)
         const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)

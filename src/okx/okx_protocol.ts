@@ -43,27 +43,27 @@ export class OKX extends Protocol {
     }
 
     async deposit(subAccountAddress: string) {
-
         await this.convertAllTokensToEth()
-
         const {eToken, eBalance} = await this.finder.getEth()
         const contract = new Contract(eToken.ABI, eToken.contractAddress, this.account)
 
         let callData = [
             subAccountAddress,
-            uint256.bnToUint256(ethers.parseUnits('1', 'wei'))
+            uint256.bnToUint256(eBalance)
         ]
 
         const fee = await this.estimateFee(contract, 'transfer', callData)
 
         callData = [
             subAccountAddress,
-            uint256.bnToUint256(eBalance - fee)
+            uint256.bnToUint256(eBalance - fee * 2n)
         ]
 
+        logger.info('Выполняем депозит', this.account.address, this.taskName)
+
         try {
-            await this.sendTransaction(contract, 'transfer', callData)
-            logger.success('Выполнен депозит', this.account.address, this.taskName)
+            const tx = await this.sendTransaction(contract, 'transfer', callData)
+            logger.success(`Выполнен депозит ${tx.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
             throw logger.error(`Не удалось выполнить депозит на okx ${e}`)
         }

@@ -2,11 +2,13 @@ import { Iconfig } from "./interfaces/iconfig";
 
 export const config: Iconfig = {
 
+    rpc_url: "https://starknet-mainnet.g.alchemy.com/v2/HXTRrJNPG1GD3WzxqUQRCC4_BWfVAiY3",
+
     //OKX
     okx_apiKey: '',
     okx_secretKey: '',
     okx_passPhrase: '',
-    okx_withdraw_amount: [0.01, 0.03],
+    okx_withdraw_amount: [0.003, 0.006],
     okx_sleep_min: 5,
     okx_sleep_max: 10,
 
@@ -20,7 +22,7 @@ export const config: Iconfig = {
     starkgate_amount: "0.0077",
 
     /* Обновдение кошельков до актуальной версии имплементации */
-    upgrade: false,
+    upgrade: true,
 
     /* Предоставление ликвидности в jediSwap */
     jediSwap_liq: true,
@@ -37,12 +39,12 @@ export const config: Iconfig = {
         если указано [1, 2] или [1, 4] будет взято случайное число протоколов от 1 до 2 или от 1 до 3 соотвественно 
     */
     protocols: [4, 4], //Выбирает случайное количество протоколов [ОТ, ДО] из включенных НИЖЕ.
-    jediSwap: false,
-    l0kswap: false,
-    mySwap: false,
-    dmail: false, 
+    jediSwap: true,
+    l0kswap: true,
+    mySwap: true,
+    dmail: true, 
 
-    slippage: 2, //Проскальзывание в процентах 1 = 1%
+    slippage: 5, //Проскальзывание в процентах 1 = 1%
 
     stableSwap: true, //Если включено обменивает ТОЛЬКО стейблы иначе обменивает ETH на стейбл
     stableSwap_full_balance: true, //Если включено обменивает весь доступный баланс стейблов
