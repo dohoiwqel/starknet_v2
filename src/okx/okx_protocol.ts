@@ -37,7 +37,7 @@ export class OKX extends Protocol {
             const jediSwap = new Jediswap(this.account, this.taskName)
             const slippage = makeDenominator(config.slippage)
             await jediSwap.swap(balance, token, this.tokens.ETH, slippage)
-            await sleep(8, 8)
+            await sleep(15, 15)
             return await this.convertAllTokensToEth()
         }
     }

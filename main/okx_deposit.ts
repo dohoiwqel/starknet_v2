@@ -14,30 +14,39 @@ async function main() {
     
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
 
-        const myAccounts = new MyAccounts(provider)
-        const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
-        await myAccounts.checkDeploy(account, privateKey)
-
-        //Проверяем количество eth на аккаунте
-        await refuelEth(account, config.refuel_threshold, config.slippage)
-
-        if(privates.length !== okxAddresses.length) {
-            throw logger.error('Количество кошельков Starknet должно быть равно количеству субаккаунтов OKX')
-        }
+        try {
+            const myAccounts = new MyAccounts(provider)
+            const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
+            await myAccounts.checkDeploy(account, privateKey)
     
-        const okx_subAcc = okxAddresses[i]
+            //Проверяем количество eth на аккаунте
+            await refuelEth(account, config.refuel_threshold, config.slippage)
+    
+            if(privates.length !== okxAddresses.length) {
+                throw logger.error('Количество кошельков Starknet должно быть равно количеству субаккаунтов OKX')
+            }
         
-        if(!okx_subAcc.startsWith('0x')) {
-            throw logger.error(`Введен неправильный адрес суб-аккаунта ${okx_subAcc}`)
+            const okx_subAcc = okxAddresses[i]
+            
+            if(!okx_subAcc.startsWith('0x')) {
+                logger.error(`Введен неправильный адрес суб-аккаунта ${okx_subAcc}`)
+                return
+            }
+        
+            if(!okx_subAcc) {
+                logger.error('Заполните OKX адреса')
+                return
+            }
+        
+            config.okx_deposit_address = okx_subAcc
+            await task_okx_deposit(account, config)
+
+        } catch(e: any) {
+            if(e) {
+                console.log(e)
+            }
         }
-    
-        if(!okx_subAcc) {
-            logger.error('Заполните OKX аддресса')
-            return
-        }
-    
-        config.okx_deposit_address = okx_subAcc
-        await task_okx_deposit(account, config)
+
     }
 }
 
