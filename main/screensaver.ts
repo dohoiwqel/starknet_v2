@@ -25,5 +25,3 @@ export function screensaver() {
     printCenteredText('Fuck the population')
     printCenteredText('https://t.me/ftp_crypto', colors.yellow)
 }
-
-screensaver()

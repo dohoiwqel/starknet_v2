@@ -1,6 +1,5 @@
 import { Account, Contract, uint256 } from "starknet";
 import { Tokens, Token } from './tokens/tokens'
-import { logger } from "../logger/logger";
 
 export class Finder {
 
@@ -50,5 +49,4 @@ export class Finder {
 
         return {eToken: this.Tokens.ETH, eBalance: userBalanceBN}
     }
-
 }
