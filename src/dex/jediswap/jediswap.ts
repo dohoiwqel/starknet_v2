@@ -49,7 +49,7 @@ export class Jediswap extends l0_or_jediSWAP {
                 deadline
             ], 'НА СВАПЕ')
             
-            logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
+            throw logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
         }
     }
 
@@ -217,16 +217,75 @@ export class Jediswap extends l0_or_jediSWAP {
 
     async addLiquidity(number: number, slippage: number) {
 
-        await this.checkAddLiquidity(number, makeDenominator(slippage))
+        // await this.checkAddLiquidity(number, makeDenominator(slippage))
+
+        const denomSlippage = makeDenominator(slippage)
 
         const ratio = await this.getRatio()
 
         const amountA = BigInt(ethers.parseUnits(number.toString(), this.tokens.USDT.decimals).toString())
         const amountB = amountA * ratio / 1_000_000n
+
+        const balanceA = await this.getBalanceOf(this.tokens.USDT)
+        const balanceB = await this.getBalanceOf(this.tokens.USDC)
+
+        const ethPrice = BigInt(await getEthPrice())
+        const ethBalance = await this.getBalanceOf(this.tokens.ETH)
+
+        //Проверка USDT
+        if(balanceA < amountA) {
+            const needReceievA = (amountA - balanceA) * 105n / 100n
+            const availabeUSDC = balanceB - amountB
+
+            if(availabeUSDC > needReceievA) {
+                await this.swap(needReceievA, this.tokens.USDC, this.tokens.USDT, denomSlippage)
+            } else {
+                
+                //decimals 6
+                const needToSwapEth = needReceievA / ethPrice
+                
+                if(BigInt(ethers.formatUnits(ethBalance, 12).split('.')[0]) < needToSwapEth) {
+                    throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
+                } else {
+                    const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
+                    await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, denomSlippage)
+                }
+            }
+        }
+
+        //Проверка USDC
+        if(balanceB < amountB) {
+            console.log('тут')
+            const needReceievB = (amountB - balanceB) * 105n / 100n
+            const availabeUSDT = balanceA - amountA
+
+            if(availabeUSDT > needReceievB) {
+                await this.swap(needReceievB, this.tokens.USDT, this.tokens.USDC, denomSlippage)
+            } else {
+                
+                //decimals 6
+                const needToSwapEth = needReceievB / ethPrice
+                
+                if(BigInt(ethers.formatUnits(ethBalance, 12).split('.')[0]) < needToSwapEth) {
+                    throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
+                } else {
+                    const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
+                    await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, denomSlippage)
+                }
+            }
+        }
+
         const deadline = String(Math.round(Date.now() / 1000 + 3600));
 
-        await this.approve(this.tokens.USDT, uint256.bnToUint256(amountA), this.contractAddress)
-        await this.approve(this.tokens.USDC, uint256.bnToUint256(amountB), this.contractAddress)
+        const allowanceUSDT = await this.getAllowance(this.tokens.USDT, this.contractAddress)
+        if(allowanceUSDT < amountA) {
+            await this.approve(this.tokens.USDT, uint256.bnToUint256(amountA), this.contractAddress)
+        }
+
+        const allowanceUSDC = await this.getAllowance(this.tokens.USDC, this.contractAddress)
+        if(allowanceUSDC < amountB) {
+            await this.approve(this.tokens.USDC, uint256.bnToUint256(amountB), this.contractAddress)
+        }
 
         const callData = [
             this.tokens.USDT.contractAddress,
