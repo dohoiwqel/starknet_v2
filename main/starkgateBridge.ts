@@ -19,7 +19,7 @@ async function main() {
     const provider = getProvider()
 
     const starkgate = new Starkgate()
-    const myAccounts = new MyAccounts(provider)
+    const myAccounts = new MyAccounts()
     const ethProvider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
 
     const gasPrice = await getEthGasPrice(ethProvider)

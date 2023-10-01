@@ -6,11 +6,17 @@ import * as XLSX from 'xlsx'
 import { logger } from "../../logger/logger";
 
 export class MyAccounts {
-    constructor(private provider?: Provider) {}
+
+    private provider: Provider
+
+    constructor() {
+        this.provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+    }
 
     async deploy(account: Account, privateKey: string) {
         try {
             const txHash = await deployBraavosAccount(privateKey, this.provider!)
+            await this.provider.waitForTransaction(txHash.transaction_hash)
             logger.success(`Задеплоен аккаунт tx: ${txHash.transaction_hash}`, account.address)
         } catch(e: any) {
             if(e.errorCode) {

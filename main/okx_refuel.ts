@@ -103,7 +103,7 @@ async function main() {
 
     try {
         for(let privateKeyOrMnemonic of privates) {
-            const myAccounts = new MyAccounts(provider)
+            const myAccounts = new MyAccounts()
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
             const starkAddress = account.address
             const wdId = await okx.withdrawal(starkAddress, getRandomFloat(config.okx_withdraw_amount[0], config.okx_withdraw_amount[1]).toString())

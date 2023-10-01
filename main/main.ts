@@ -99,7 +99,7 @@ async function main() {
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
         const tasks = getTasks(config);
         try {
-            const myAccounts = new MyAccounts(provider)
+            const myAccounts = new MyAccounts()
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
             await myAccounts.checkDeploy(account, privateKey)
 

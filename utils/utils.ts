@@ -81,8 +81,8 @@ export function getProvider() {
     if(config.rpc_url) {
         provider = new Provider({rpc: {nodeUrl: config.rpc_url} })
     } else {
-        const provider = new Provider({ sequencer: { baseUrl: constants.NetworkName.SN_MAIN } })
+        provider = new Provider({ sequencer: { baseUrl: constants.NetworkName.SN_MAIN } })
     }
 
-    return provider!
+    return provider
 }

@@ -6,6 +6,7 @@ import { Provider, constants } from 'starknet'
 import { refuelEth } from '../src/refuel'
 import { config } from '../cfg'
 import { task_okx_deposit } from '../src/tasks'
+import { screensaver } from './screensaver'
 
 async function main() {
 
@@ -18,7 +19,7 @@ async function main() {
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
 
         try {
-            const myAccounts = new MyAccounts(provider)
+            const myAccounts = new MyAccounts()
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
             await myAccounts.checkDeploy(account, privateKey)
     
