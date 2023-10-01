@@ -8,6 +8,9 @@ import { config } from '../cfg'
 import { task_okx_deposit } from '../src/tasks'
 
 async function main() {
+
+    screensaver()
+
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
     const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
     const provider = getProvider()

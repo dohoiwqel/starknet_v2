@@ -8,6 +8,7 @@ import { getProvider, getRandomElementFromArray, getRandomInt, read, sleep } fro
 import { refuelEth } from "../src/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
+import { screensaver } from "./screensaver";
 
 function getTasks(config: Iconfig) {
     let tasks = new Array<Task>
@@ -81,6 +82,9 @@ async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig)
 }
 
 async function main() {
+
+    screensaver()
+
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
     const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
     const ethPrivates = await read(path.resolve(__dirname, '..', 'ethPrivates.txt'))

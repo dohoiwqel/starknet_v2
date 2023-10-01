@@ -1,8 +1,12 @@
 import { logger } from "../logger/logger"
 import { input } from "../utils/querys";
 import { MyAccounts } from "../src/wallets/myAccounts"
+import { screensaver } from "./screensaver";
 
 async function main() {
+
+    screensaver()
+
     let answer = await input('Введите количество кошельков')
     let wallet_number = 0
 
