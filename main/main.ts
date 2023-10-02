@@ -1,10 +1,10 @@
-import { Account, HttpError, Provider, constants } from "starknet";
+import { Account, HttpError } from "starknet";
 import { Iconfig } from '../interfaces/iconfig';
 import { MyAccounts } from '../src/wallets/myAccounts';
 import { logger } from "../logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
 import { config } from "../cfg";
-import { getProvider, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
+import { getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
 import { refuelEth } from "../src/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
@@ -58,6 +58,7 @@ async function runTask(task: Task, account: Account, config: Iconfig): Promise<v
         await task(account, config)
     } catch(e: any) {
         if(e instanceof HttpError) {
+            console.log('СПИМ')
             await sleep(5, 10)
             return await runTask(task, account, config)
         }
@@ -90,11 +91,6 @@ async function main() {
     const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
     const ethPrivates = await read(path.resolve(__dirname, '..', 'ethPrivates.txt'))
     
-    logger.success('Данные успешно загружены')
-
-    let provider: Provider = getProvider()
-    // console.log((await provider.getBlock('latest')).gas_price)
-
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
 
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
@@ -105,7 +101,7 @@ async function main() {
             await myAccounts.checkDeploy(account, privateKey)
 
             //Проверяем количество eth на аккаунте
-            await refuelEth(account, config.refuel_threshold, config.slippage)
+            // await refuelEth(account, config.refuel_threshold, config.slippage)
 
             const shuffledTasks = shuffleTask(tasks)
             showTasks(shuffledTasks, account.address)

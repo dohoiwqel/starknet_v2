@@ -4,19 +4,22 @@ import { ethers } from "ethers";
 import { calculateAddressBraavos, deployBraavosAccount } from "./deploy_bravos";
 import * as XLSX from 'xlsx'
 import { logger } from "../../logger/logger";
+import { getProvider } from "../../utils/utils";
 
 export class MyAccounts {
 
-    private provider: Provider
+    private createProvider: Provider
+    private standartProvider: Provider
 
     constructor() {
-        this.provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+        this.createProvider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+        this.standartProvider = getProvider()
     }
 
     async deploy(account: Account, privateKey: string) {
         try {
-            const txHash = await deployBraavosAccount(privateKey, this.provider!)
-            await this.provider.waitForTransaction(txHash.transaction_hash)
+            const txHash = await deployBraavosAccount(privateKey, this.createProvider!)
+            await this.createProvider.waitForTransaction(txHash.transaction_hash)
             logger.success(`Задеплоен аккаунт tx: ${txHash.transaction_hash}`, account.address)
         } catch(e: any) {
             if(e.errorCode) {
@@ -74,13 +77,13 @@ export class MyAccounts {
             if(lineLength > 1) {
                 const privateKey = this.getBraavosPrivateKey(mnemonicORpirvateKey)
                 const accountAddress = calculateAddressBraavos(privateKey)
-                const account = new Account(this.provider!, accountAddress, privateKey)
+                const account = new Account(this.standartProvider!, accountAddress, privateKey)
                 return {account: account, privateKey: privateKey}
             }
     
             //Если privateKey
             const accountAddress = calculateAddressBraavos(mnemonicORpirvateKey)
-            const account = new Account(this.provider!, accountAddress, mnemonicORpirvateKey)
+            const account = new Account(this.standartProvider!, accountAddress, mnemonicORpirvateKey)
             return {account: account, privateKey: mnemonicORpirvateKey}
         } catch(e) {
             throw new Error (`Ошибка при полуении starknet аккаунта ${e}`)

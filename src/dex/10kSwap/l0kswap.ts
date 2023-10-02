@@ -1,4 +1,4 @@
-import { Contract, EstimateFeeResponse, uint256 } from "starknet";
+import { Contract, EstimateFeeResponse, HttpError, uint256 } from "starknet";
 import { contractABI } from './contractABI';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { l0_or_jediSWAP } from '../../dex';
@@ -38,7 +38,7 @@ export class L0kswap extends l0_or_jediSWAP {
             const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
             const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
             logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
-        } catch(e) {
+        } catch(e: any) {
             console.log([
                 amountIn, 
                 amountOut,
@@ -47,6 +47,10 @@ export class L0kswap extends l0_or_jediSWAP {
                 deadline
             ])
             logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
+
+            if(e instanceof HttpError) {
+                throw e
+            }
         }
     }
 

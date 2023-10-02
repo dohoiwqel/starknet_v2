@@ -2,7 +2,7 @@ import { Iconfig } from "./interfaces/iconfig";
 
 export const config: Iconfig = {
 
-    rpc_url: "https://starknet-mainnet.g.alchemy.com/v2/HXTRrJNPG1GD3WzxqUQRCC4_BWfVAiY3",
+    rpc_url: "https://starknet-mainnet.g.alchemy.com/v2/Ekse1g_j948hqjq79TAUGCkGETIxWMSI",
 
     //OKX
     okx_apiKey: '',

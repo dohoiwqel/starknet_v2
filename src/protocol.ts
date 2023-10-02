@@ -21,7 +21,7 @@ export class Protocol {
     protected async waitForTransaction(tx: string): Promise<GetTransactionReceiptResponse> {
         try {
             const provider = getProvider()
-            const response = await provider.waitForTransaction(tx, {retryInterval: 1000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
+            const response = await provider.waitForTransaction(tx, {retryInterval: 10000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
             
             if(response.status === 'ACCEPTED_ON_L2') {
                 return response
@@ -30,10 +30,10 @@ export class Protocol {
                 throw new Error(`Не удалось послать транзакцию ${response.transaction_hash}`);
 
             } else {
+                await sleep(2, 2)
                 return await this.waitForTransaction(tx)
             }
         } catch(e: any) {
-
             if(e.message && e.message.includes('Не удалось послать транзакцию')) {
                 throw logger.error(e.message)
             } else {

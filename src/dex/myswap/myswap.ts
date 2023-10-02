@@ -1,4 +1,4 @@
-import { Contract, EstimateFeeResponse, uint256 } from 'starknet'
+import { Contract, EstimateFeeResponse, HttpError, uint256 } from 'starknet'
 import { contractABI } from './contractABI';
 import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
@@ -126,6 +126,10 @@ export class Myswap extends Dex {
             ])
 
             logger.error(`Не удалось выполнить свап ${tokenFrom.ticker} на ${tokenTo.ticker} ${e}`, this.account.address, this.taskName)
+
+            if(e instanceof HttpError) {
+                throw e
+            }
         }
     }
 
