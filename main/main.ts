@@ -9,6 +9,7 @@ import { refuelEth } from "../src/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
 import { screensaver } from "./screensaver";
+import { ethers } from "ethers";
 
 function getTasks(config: Iconfig) {
     let tasks = new Array<Task>
@@ -111,11 +112,11 @@ async function main() {
 
             if(shuffledTasks.includes(task_orbiter_to_evm)) {
 
-                if(privates.length !== okxAddresses.length) {
+                if(privates.length !== ethPrivates.length) {
                     throw logger.error('Количество кошельков Starknet должно быть равно количеству ETH аддрессов')
                 }
 
-                const evmAddress = ethPrivates[i]
+                const evmAddress = new ethers.Wallet(ethPrivates[i]).address
 
                 if(!evmAddress) {
                     logger.error('Заполните evm аддресса в data.json')

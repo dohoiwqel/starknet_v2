@@ -68,16 +68,19 @@ export class Orbiter extends Protocol {
 
     async bridge(amount: bigint, toNetwork: network, evmAddress: string) {
 
-        await this.convertAllTokensToEth()
+        // await this.convertAllTokensToEth()
 
         logger.info(`Начали выполнять бридж STARKNET: ${get_short_address(this.account.address)} -> ${toNetwork.toUpperCase()}: ${get_short_address(evmAddress)}`, this.account.address, this.taskName)
 
         const contractAddress = '0x0173f81c529191726c6e7287e24626fe24760ac44dae2a1f7e02080230f8458b'
         const eBalance = await this.getBalanceOf(this.tokens.ETH)
+        const withHoldingFee = getWithHoldingFee(toNetwork)
+        const bridgeFee = await this.getBridgeFee(toNetwork, contractAddress, evmAddress)
+
+        amount += withHoldingFee
 
         if(amount === 0n) {
             logger.info(`Делаем бридж всего эфира`, this.account.address, this.taskName)
-            const bridgeFee = await this.getBridgeFee(toNetwork, contractAddress, evmAddress)
             amount = eBalance - bridgeFee
         }
 
@@ -111,6 +114,8 @@ export class Orbiter extends Protocol {
         ]
 
         checkPayText(uint256.uint256ToBN(_amount).toString(), payTextId)
+        
+        console.log(payTextValue)
 
         const executionFee = await this.estimateFee(contract, this.method, callData)
 
