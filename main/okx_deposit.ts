@@ -1,5 +1,5 @@
 import path from 'path'
-import { getProvider, read } from '../utils/utils'
+import { getProvider, read, sleep } from '../utils/utils'
 import { logger } from '../logger/logger'
 import { MyAccounts } from '../src/wallets/myAccounts'
 import { Provider, constants } from 'starknet'
@@ -14,7 +14,6 @@ async function main() {
 
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
     const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
-    const provider = getProvider()
     
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
 
@@ -50,6 +49,8 @@ async function main() {
                 console.log(e)
             }
         }
+
+        await sleep(config.okx_sleep_min, config.okx_sleep_max)
 
     }
 }
