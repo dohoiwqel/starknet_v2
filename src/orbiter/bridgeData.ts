@@ -47,10 +47,9 @@ export function getPayTextValue(value: bigint, payTextId: string) {
     const _value = value.toString()
     const replacedString = _value.slice(0, -payTextId.length) + payTextId;
     return BigInt(replacedString);
-    
 }
 
-export function checkPayText(value: string, payTextValue: bigint) {
+export function checkPayText(value: string, payTextValue: string) {
     const targetSuffix = payTextValue.toString();
     const inputSuffix = value.slice(-targetSuffix.length);
   

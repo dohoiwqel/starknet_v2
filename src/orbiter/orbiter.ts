@@ -1,11 +1,9 @@
 import { Contract, uint256 } from "starknet";
 import { Protocol } from "../protocol";
 import { ABI } from "./ABI";
-import { Tokens } from "../tokens/tokens";
 import { get_short_address, logger } from "../../logger/logger";
 import { checkPayText, getMinBridgeAmount, getPayTextId, getPayTextValue, getWithHoldingFee, network } from "./bridgeData";
 import { ethers } from "ethers";
-import { task_jediSwap } from "../tasks";
 import { Jediswap } from "../dex/jediswap/jediswap";
 import { config } from "../../cfg";
 import { makeDenominator } from "../denominator";
@@ -112,7 +110,7 @@ export class Orbiter extends Protocol {
             _ext,
         ]
 
-        checkPayText(uint256.uint256ToBN(_amount).toString(), payTextValue)
+        checkPayText(uint256.uint256ToBN(_amount).toString(), payTextId)
 
         const executionFee = await this.estimateFee(contract, this.method, callData)
 
