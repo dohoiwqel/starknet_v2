@@ -13,6 +13,7 @@ import { getRandomInt } from "../utils/utils";
 import { Orbiter } from "./orbiter/orbiter";
 import { Iconfig } from "../interfaces/iconfig";
 import { OKX } from "./okx/okx_protocol";
+import { StarkId } from "./starkId/starkId";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>
 
@@ -221,4 +222,9 @@ export async function task_okx_deposit(account: Account, config: Iconfig) {
     }
 
     await okx.deposit(config.okx_deposit_address)
+}
+
+export async function task_mint_starkId(account: Account, config: Iconfig) {
+    const starkId = new StarkId(account, `mint_starkId`)
+    await starkId.mint()
 }

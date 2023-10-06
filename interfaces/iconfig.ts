@@ -32,4 +32,5 @@ export interface Iconfig {
     okx_deposit_address?: string,
     okx_deposit?: boolean,
     rpc_url?: string,
+    mint_starkId: boolean
 }
