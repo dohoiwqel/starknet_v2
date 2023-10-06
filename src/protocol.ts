@@ -1,7 +1,7 @@
 import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpError, TransactionStatus, uint256 } from "starknet";
 import { logger } from "../logger/logger";
 import { getProvider, sleep } from "../utils/utils";
-import { Token, Tokens } from "./tokens/tokens";
+import { PoolToken, Token, Tokens } from "./tokens/tokens";
 import { Finder } from "./finder";
 
 export class Protocol {
@@ -71,7 +71,7 @@ export class Protocol {
         return uint256.uint256ToBN(allowance.remaining)
     }
 
-    protected async approve(token: Token, amount: uint256.Uint256, spender: string): Promise<void> {
+    protected async approve(token: Token | PoolToken, amount: uint256.Uint256, spender: string): Promise<void> {
         
         logger.info(`Выполняем аппрув ${token.ticker}`, this.account.address, this.taskName)
 
@@ -88,12 +88,12 @@ export class Protocol {
             const receipt = await this.sendTransaction(contract, "approve", callData)
             logger.success(`Выполнен аппрув tx: ${receipt.transaction_hash}`, this.account.address, this.taskName)
         } catch(e) {
-            logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
-
             if(e instanceof HttpError) {
                 await sleep(5, 10)
                 return await this.approve(token, amount, spender)
             }
+
+            throw logger.error(`Не удалось выполнить аппрув ${e}`, this.account.address, this.taskName)
         }
     }
 

@@ -1,3 +1,3 @@
 export function getRandomNumber(max: number, min: number) {
-    return Math.floor(Math.random() * (max - min) + min)
+    return Number((Math.random() * (max - min) + min).toFixed(6))
 }

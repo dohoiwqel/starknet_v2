@@ -23,6 +23,7 @@ export interface Iconfig {
     orbiter_amount: string,
     orbiter_to_network: network,
     orbiter_to_evm_address?: string,
+    orbiter_bridge_full_ETH: boolean,
     okx_apiKey: string,
     okx_passPhrase: string,
     okx_secretKey: string,
@@ -32,5 +33,7 @@ export interface Iconfig {
     okx_deposit_address?: string,
     okx_deposit?: boolean,
     rpc_url?: string,
-    mint_starkId: boolean
+    mint_starkId: boolean,
+    jediswap_liq_withdraw: boolean,
+    starkgate_bridge_full_ETH: boolean,
 }

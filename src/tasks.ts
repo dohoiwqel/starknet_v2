@@ -183,8 +183,13 @@ export async function task_jediSwap_liq(account: Account, config: Iconfig) {
         throw new Error("LIQ_TO должны быть больше чем LIQ_FROM")
     }
 
-    const depositValue = getRandomNumber(LIQ_TO, LIQ_FROM) / 2
+    let depositValue = Number((getRandomNumber(LIQ_TO, LIQ_FROM) / 2).toFixed(6))
+
     await jediSwap.addLiquidity(depositValue, config.slippage)
+
+    if(config.jediswap_liq_withdraw) {
+        await jediSwap.withdrawFromPool()
+    }
 }
 
 export async function task_dmail(account: Account, config: Iconfig) {
@@ -211,7 +216,13 @@ export async function task_orbiter_to_evm(account: Account, config: Iconfig) {
     }
 
     const orbiter = new Orbiter(account, 'orbiterToEvm')
-    await orbiter.bridge(ethers.parseEther(config.orbiter_amount), config.orbiter_to_network, config.orbiter_to_evm_address)
+    let orbiterAmount = ethers.parseEther(config.orbiter_amount)
+
+    if(config.orbiter_bridge_full_ETH) {
+        orbiterAmount = 0n
+    }
+
+    await orbiter.bridge(orbiterAmount, config.orbiter_to_network, config.orbiter_to_evm_address)
 }
 
 export async function task_okx_deposit(account: Account, config: Iconfig) {

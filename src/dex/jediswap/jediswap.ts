@@ -7,6 +7,7 @@ import { getEthPrice } from '../oracles/oracle';
 import axios from 'axios'
 import { logger } from '../../../logger/logger';
 import { Token } from '../../tokens/tokens';
+import { poolTokenABI } from './poolTokenABI';
 
 export class Jediswap extends l0_or_jediSWAP {
 
@@ -128,96 +129,13 @@ export class Jediswap extends l0_or_jediSWAP {
         return res
     }
 
-    private async checkAddLiquidity(depositValue: number, slippage: denomNumber) {
-
-        depositValue = depositValue*1.05
-        
-        //Проверки на наличие достоточного количество USDT USDC
-        const usdtBalance = await this.getBalanceOf(this.tokens.USDT)
-        const usdcBalance = await this.getBalanceOf(this.tokens.USDC)
-        
-        const ethBalance = await this.getBalanceOf(this.tokens.ETH)
-        const ethPrice = BigInt(await getEthPrice())
-        
-        const ethUSDBalance = ethBalance * ethPrice
-        const formatEthUSDBalance = BigInt(Math.floor(parseInt(ethers.formatUnits(ethUSDBalance, 12))))
-        const formatDepositValue = BigInt(ethers.parseUnits(depositValue.toString(), 6).toString())
-
-        if(formatDepositValue > usdtBalance && formatDepositValue > usdcBalance) {
-            logger.info(`Обмениваем eth на usdt и usdc`, this.account.address, this.taskName)
-            
-            const needToSwapUSD = formatDepositValue
-            const needToSwapEth = needToSwapUSD / ethPrice
-            
-            //Прибавляем несколько процентов из-за разности в цене оракла и пулом
-            let formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
-            let percent = formatNeedToSwapEth * 20n/100n
-            formatNeedToSwapEth += percent
-
-            await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
-            await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
-            
-            return
-        }
-
-        if(usdtBalance < formatDepositValue) {
-
-            //let needToSwapUSDC = formatDepositValue - usdtBalance
-            let needToSwapUSDC = formatDepositValue
-            let percent = needToSwapUSDC * 20n/100n
-            needToSwapUSDC += percent
-            
-            if(usdcBalance > formatDepositValue && needToSwapUSDC > 0n && needToSwapUSDC < usdcBalance) {
-                await this.swap(needToSwapUSDC, this.tokens.USDC, this.tokens.USDT, slippage)
-                return
-            }
-
-            if(formatEthUSDBalance > formatDepositValue) {
-                const needToSwapEth = needToSwapUSDC / ethPrice
-
-                if(ethBalance < needToSwapEth) {
-                    throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
-                }
-
-                const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
-                await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDT, slippage)
-                return
-            }
-
-            return
-        }
-
-        if(usdcBalance < formatDepositValue) {
-
-            // let needToSwapUSDT = formatDepositValue - usdcBalance
-            let needToSwapUSDT = formatDepositValue
-            let percent = needToSwapUSDT * 20n/100n
-            needToSwapUSDT += percent
-            
-            if(usdtBalance > formatDepositValue && needToSwapUSDT > 0n && needToSwapUSDT < usdtBalance) {
-                await this.swap(needToSwapUSDT, this.tokens.USDT, this.tokens.USDC, slippage)
-                return
-            }
-
-            if(formatEthUSDBalance > formatDepositValue) {
-                const needToSwapEth = needToSwapUSDT / ethPrice
-                
-                if(ethBalance < needToSwapEth) {
-                    throw logger.error(`Недостаточно средств для обмена`, this.account.address, this.taskName)
-                }
-
-                const formatNeedToSwapEth = ethers.parseUnits(needToSwapEth.toString(), 12)
-                await this.swap(formatNeedToSwapEth, this.tokens.ETH, this.tokens.USDC, slippage)
-                return
-            }
-
-            return
-        }
+    //Возвращает значение в модуль task для add_liquidity
+    async getUsdtBalance_humanReadable() {
+        const balance = await this.getBalanceOf(this.tokens.USDT)
+        return Number(Number(ethers.formatUnits(balance, this.tokens.USDT.decimals)).toFixed(this.tokens.USDT.decimals))
     }
 
     async addLiquidity(number: number, slippage: number) {
-
-        // await this.checkAddLiquidity(number, makeDenominator(slippage))
 
         const denomSlippage = makeDenominator(slippage)
 
@@ -330,5 +248,51 @@ export class Jediswap extends l0_or_jediSWAP {
         const _slippage = makeDenominator(slippage)
         await this.swap(balance, token, eToken, _slippage)
         return
+    }
+
+    async withdrawFromPool() {
+
+        const poolTokenContract = new Contract(poolTokenABI, '0x05801bdad32f343035fb242e98d1e9371ae85bc1543962fedea16c59b35bd19b', this.account)
+        const lpTokenBalance: any = (await poolTokenContract.call('balanceOf', [this.account.address]))
+        const lpTokenBalanceOf: any = (await poolTokenContract.call('totalSupply'))
+
+        const myShares = BigInt(lpTokenBalanceOf.totalSupply.low) / BigInt(lpTokenBalance.balance.low)
+        
+        const firstToken = this.tokens.USDC
+        const secondToken = this.tokens.USDT
+
+        const reserves: any = await poolTokenContract.call('get_reserves')
+
+        const firstTokenReserves = BigInt(reserves.reserve0.low)
+        const secondTokenReserves = BigInt(reserves.reserve1.low)
+
+        //отняли 5 процентов 
+        const firstTokenAmount = firstTokenReserves / myShares * 95n/100n
+        const secondTokenAmount = secondTokenReserves / myShares * 95n/100n
+
+        await this.approve(this.tokens.jediswap_USDC_USDC_shares, uint256.bnToUint256(BigInt(lpTokenBalance.balance.low)), this.contractAddress)
+
+        const contract = new Contract(this.ABI, this.contractAddress, this.account)
+        const deadline = String(Math.round(Date.now() / 1000 + 3600));
+
+        const callData = [
+            firstToken.contractAddress,
+            secondToken.contractAddress,
+            uint256.bnToUint256(BigInt(lpTokenBalance.balance.low)),
+            uint256.bnToUint256(firstTokenAmount),
+            uint256.bnToUint256(secondTokenAmount),
+            this.account.address,
+            deadline,
+        ]
+
+        try {
+            const txReceipt = await this.sendTransaction(contract, 'remove_liquidity', callData)
+            const txResponse = await this.waitForTransaction(txReceipt.transaction_hash)
+
+            logger.success(`Забрали ликвидность tx: ${txResponse.transaction_hash}`, this.account.address, this.taskName)
+        } catch(e) {
+            throw logger.error(`Не удалось достать ликвидность ${e}`, this.account.address, this.taskName)
+        }
+        
     }
 }

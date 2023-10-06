@@ -8,6 +8,13 @@ import { config } from "../cfg"
 import path from 'path'
 import { screensaver } from "./screensaver"
 
+async function getExecutionFee(ethProvider: ethers.JsonRpcProvider) {
+    const gasPrice = await getEthGasPrice(ethProvider)
+    const gas = 125_000n
+    const executionFee = gas * gasPrice!
+
+    return executionFee
+}
 
 async function main() {
 
@@ -36,11 +43,22 @@ async function main() {
         await waitForGas(account, config.minGasPrice)
 
         const l2Address = account.address
-        const value = ethers.parseEther(config.starkgate_amount) + starknetFee
-        const amount = ethers.parseEther(config.starkgate_amount).toString()
+
+        //Value для транзакции
+        let value = ethers.parseEther(config.starkgate_amount) + starknetFee
+        //Количество эфира, которое будет забриджено
+        let amount = ethers.parseEther(config.starkgate_amount)
+
+        if(config.starkgate_bridge_full_ETH) {
+            const executionFee = await getExecutionFee(ethProvider)
+            const ethBalance = await ethProvider.getBalance(wallet.address)
+
+            value = ethBalance - executionFee  
+            amount = ethBalance - executionFee - starknetFee
+        }
         
         const starkgate = new Starkgate(wallet)
-        await starkgate.bridge(l2Address, value.toString(), amount, gasPrice!)
+        await starkgate.bridge(l2Address, value.toString(), amount.toString(), gasPrice!)
         
         await sleep(config.sleep_account[0], config.sleep_account[1])
     }

@@ -68,7 +68,7 @@ export class Orbiter extends Protocol {
 
     async bridge(amount: bigint, toNetwork: network, evmAddress: string) {
 
-        // await this.convertAllTokensToEth()
+        await this.convertAllTokensToEth()
 
         logger.info(`Начали выполнять бридж STARKNET: ${get_short_address(this.account.address)} -> ${toNetwork.toUpperCase()}: ${get_short_address(evmAddress)}`, this.account.address, this.taskName)
 

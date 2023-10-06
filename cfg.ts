@@ -20,18 +20,21 @@ export const config: Iconfig = {
 
     /* Бридж ETH через официальный мост */ 
     starkgate_amount: "0.0077",
+    starkgate_bridge_full_ETH: false, 
 
     /* Обновдение кошельков до актуальной версии имплементации */
     upgrade: true,
 
     /* Предоставление ликвидности в jediSwap */
     jediSwap_liq: false,
-    jediSwap_liq_amount: [1, 1], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
+    jediSwap_liq_amount: [1, 10], //Выбирает случайно количество стейблов для предоставления ликвидности [ОТ, ДО]
+    jediswap_liq_withdraw: true,
 
     /* Бридж ИЗ старкнета в arbitrum, использця orbiter */
     orbiter_to_evm: false,
-    orbiter_amount: "0", //Если 0, то выполнит трансфер всего эфира на кошельке
+    orbiter_amount: "0",
     orbiter_to_network: 'arbitrum',
+    orbiter_bridge_full_ETH: true,
     
     /*
         dex - рандомизирует количество dex протоколов

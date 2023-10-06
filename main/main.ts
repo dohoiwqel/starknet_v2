@@ -113,6 +113,11 @@ async function main() {
                     throw logger.error('Количество кошельков Starknet должно быть равно количеству ETH аддрессов')
                 }
 
+                if(config.orbiter_amount === '0') {
+                    logger.error(`Укажите значение orbiter_amount`)
+                    return
+                }
+
                 const evmAddress = new ethers.Wallet(ethPrivates[i]).address
 
                 if(!evmAddress) {
