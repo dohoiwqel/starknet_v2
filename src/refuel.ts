@@ -20,10 +20,10 @@ export async function refuelEth(account: Account, refuelThreshold: string, slipp
         const needToSwapEth = formatRefuelThreshold - eBalance
         const needToSwapUSD = BigInt(ethers.formatUnits(needToSwapEth * ethPrice, 12).split('.')[0])
 
-        if(needToSwapUSD > balance) {
+        if(needToSwapEth > balance) {
             throw logger.error('Недостаточно токенов для пополнения ETH', account.address)
+        
         } else {
-
             const jediSwap = new Jediswap(account, "eth_refuel")
             await jediSwap.swap(needToSwapUSD, token, eToken, makeDenominator(slippage))
         }
