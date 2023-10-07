@@ -38,7 +38,7 @@ async function main() {
 
     for(let [i, ethPrivate] of ethPrivates.entries()) {
         const wallet = new ethers.Wallet(ethPrivate, ethProvider)
-        const {account, privateKey} = await myAccounts.getAccount(privates[i])
+        const {account, privateKey} = await myAccounts.get_account_without_checkDeploy(privates[i])
         
         await waitForGas(account, config.minGasPrice)
 

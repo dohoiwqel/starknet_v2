@@ -75,6 +75,30 @@ export class MyAccounts {
         return groundKey
     }
 
+    async get_account_without_checkDeploy(mnemonicORpirvateKey: string) {
+        try {
+            const lineLength = mnemonicORpirvateKey.split(" ").length
+            
+            //Если мнемоника
+            if(lineLength > 1) {
+                const _privateKey = this.getBraavosPrivateKey(mnemonicORpirvateKey)
+                const accountAddress = calculateAddressBraavos(_privateKey)
+                const _account = new Account(this.standartProvider!, accountAddress, _privateKey)
+                return {account: _account, privateKey: _privateKey}
+            
+            } else {
+                //Если privateKey
+                const _privateKey = mnemonicORpirvateKey
+                const accountAddress = calculateAddressBraavos(mnemonicORpirvateKey)
+                const _account = new Account(this.standartProvider!, accountAddress, _privateKey)
+                return {account: _account, privateKey: _privateKey}
+            }
+
+        } catch(e) {
+            throw new Error (`Ошибка при полуении starknet аккаунта ${e}`)
+        }
+    }
+
     async getAccount(mnemonicORpirvateKey: string) {
         try {
             const lineLength = mnemonicORpirvateKey.split(" ").length
@@ -97,8 +121,6 @@ export class MyAccounts {
                 const {account, privateKey} = await this.checkDeploy(_account, _privateKey)
                 return {account: account, privateKey: privateKey}
             }
-    
-
 
         } catch(e) {
             throw new Error (`Ошибка при полуении starknet аккаунта ${e}`)
