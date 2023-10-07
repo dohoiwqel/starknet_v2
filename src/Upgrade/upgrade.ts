@@ -28,11 +28,9 @@ export class UpgradeImplementation extends Protocol {
         ]
 
         try {
-            const res = await contract.invoke('upgrade', callData)
-
-            if(await this.waitForTransaction(res.transaction_hash)) {
-                logger.success(`Аккаунт обновлен tx: ${res.transaction_hash}`, this.account.address, this.taskName)
-            }
+            const txReceipt = await this.sendTransaction(contract, 'upgrade', callData)
+            const txResponse = await this.waitForTransaction(txReceipt.transaction_hash)
+            logger.success(`Аккаунт обновлен tx: ${txResponse.transaction_hash}`, this.account.address, this.taskName)
             
         } catch(e) {
             throw logger.error(`Не удалось обновить аккаунт ${e}`, this.account.address, this.taskName)
