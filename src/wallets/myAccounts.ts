@@ -24,7 +24,7 @@ export class MyAccounts {
         } catch(e: any) {
             if(e.errorCode) {
                 if(e.errorCode === "StarknetErrorCode.INSUFFICIENT_ACCOUNT_BALANCE") {
-                    throw logger.error(`Недостаточно средст для деплоя`, account.address)
+                    throw logger.error(`Недостаточно средств для деплоя`, account.address)
                 }
             }
 
@@ -37,7 +37,7 @@ export class MyAccounts {
             const contract = new Contract(ABI, account.address, account)
             const pubKey = await contract.getPublicKey()
         } catch(e: any) {
-            if(e.message.includes("is not deployed")) {
+            if(e.message.includes("is not deployed") || e.message.includes('Contract not found')) {
                 logger.info('Деплоим аккаунт', account.address)
                 await this.deploy(account, privateKey)
             }
