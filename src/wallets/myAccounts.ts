@@ -1,4 +1,4 @@
-import { Account, Contract, Provider, SequencerProvider, constants, ec, transaction, uint256, ProviderInterface, stark, GatewayError } from "starknet";
+import { Account, Contract, Provider, SequencerProvider, constants, ec, transaction, uint256, ProviderInterface, stark, GatewayError, TransactionStatus } from "starknet";
 import { ABI } from "./ABI";
 import { ethers } from "ethers";
 import { calculateAddressBraavos, deployBraavosAccount } from "./deploy_bravos";
@@ -19,8 +19,10 @@ export class MyAccounts {
     async deploy(account: Account, privateKey: string) {
         try {
             const txHash = await deployBraavosAccount(privateKey, this.createProvider!)
-            await this.createProvider.waitForTransaction(txHash.transaction_hash)
+            await this.createProvider.waitForTransaction(txHash.transaction_hash, {retryInterval: 10000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
             logger.success(`Задеплоен аккаунт tx: ${txHash.transaction_hash}`, account.address)
+            account = new Account(this.createProvider, account.address, privateKey)
+            return {account: account, privateKey: privateKey}
         } catch(e: any) {
             if(e.errorCode) {
                 if(e.errorCode === "StarknetErrorCode.INSUFFICIENT_ACCOUNT_BALANCE") {
@@ -28,19 +30,23 @@ export class MyAccounts {
                 }
             }
 
-            logger.error(`Незивестная ошибка при деплое аккаунта ${JSON.stringify(e)}`, account.address)
+            throw logger.error(`Незивестная ошибка при деплое аккаунта ${JSON.stringify(e)}`, account.address)
         }
     }
 
-    async checkDeploy(account: Account, privateKey: string) {
+    async checkDeploy(_account: Account, _privateKey: string) {
         try {
-            const contract = new Contract(ABI, account.address, account)
+            const contract = new Contract(ABI, _account.address, _account)
             const pubKey = await contract.getPublicKey()
+            return {account: _account, privateKey: _privateKey} //Стандартный провайдер
         } catch(e: any) {
             if(e.message.includes("is not deployed") || e.message.includes('Contract not found')) {
-                logger.info('Деплоим аккаунт', account.address)
-                await this.deploy(account, privateKey)
+                logger.info('Деплоим аккаунт', _account.address)
+                const {account: account, privateKey: privateKey} = await this.deploy(_account, _privateKey) //деплой провайдер
+                return {account: account, privateKey: privateKey}
             }
+
+            throw logger.error(`Неизвестная ошибка при получении аккаунта`)
         }
     }
 
@@ -75,16 +81,25 @@ export class MyAccounts {
             
             //Если мнемоника
             if(lineLength > 1) {
-                const privateKey = this.getBraavosPrivateKey(mnemonicORpirvateKey)
-                const accountAddress = calculateAddressBraavos(privateKey)
-                const account = new Account(this.standartProvider!, accountAddress, privateKey)
+                const _privateKey = this.getBraavosPrivateKey(mnemonicORpirvateKey)
+                const accountAddress = calculateAddressBraavos(_privateKey)
+                const _account = new Account(this.standartProvider!, accountAddress, _privateKey)
+
+                const {account, privateKey} = await this.checkDeploy(_account, _privateKey)
+                return {account: account, privateKey: privateKey}
+            
+            } else {
+                //Если privateKey
+                const _privateKey = mnemonicORpirvateKey
+                const accountAddress = calculateAddressBraavos(mnemonicORpirvateKey)
+                const _account = new Account(this.standartProvider!, accountAddress, _privateKey)
+
+                const {account, privateKey} = await this.checkDeploy(_account, _privateKey)
                 return {account: account, privateKey: privateKey}
             }
     
-            //Если privateKey
-            const accountAddress = calculateAddressBraavos(mnemonicORpirvateKey)
-            const account = new Account(this.standartProvider!, accountAddress, mnemonicORpirvateKey)
-            return {account: account, privateKey: mnemonicORpirvateKey}
+
+
         } catch(e) {
             throw new Error (`Ошибка при полуении starknet аккаунта ${e}`)
         }

@@ -99,7 +99,6 @@ async function main() {
         try {
             const myAccounts = new MyAccounts()
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
-            await myAccounts.checkDeploy(account, privateKey)
 
             //Проверяем количество eth на аккаунте
             await refuelEth(account, config.refuel_threshold, config.slippage)
