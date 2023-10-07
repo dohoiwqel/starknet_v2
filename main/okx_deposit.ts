@@ -1,5 +1,5 @@
 import path from 'path'
-import { getProvider, read, sleep } from '../utils/utils'
+import { getProvider, read, resultIndicator, sleep } from '../utils/utils'
 import { logger } from '../logger/logger'
 import { MyAccounts } from '../src/wallets/myAccounts'
 import { Provider, constants } from 'starknet'
@@ -15,6 +15,8 @@ async function main() {
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
     const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
     
+    let counter = 1
+
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
 
         try {
@@ -44,10 +46,16 @@ async function main() {
             config.okx_deposit_address = okx_subAcc
             await task_okx_deposit(account, config)
 
+            resultIndicator(counter, privates.length)
+            counter++
+
         } catch(e: any) {
             if(e) {
                 console.log(e)
             }
+
+            resultIndicator(counter, privates.length)
+            counter++
         }
 
         await sleep(config.okx_sleep_min, config.okx_sleep_max)

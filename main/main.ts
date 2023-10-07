@@ -4,7 +4,7 @@ import { MyAccounts } from '../src/wallets/myAccounts';
 import { logger } from "../logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mint_starkId, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
 import { config } from "../cfg";
-import { getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
+import { resultIndicator, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
 import { refuelEth } from "../src/refuel";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
@@ -94,6 +94,8 @@ async function main() {
     
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
 
+    let counter = 1
+
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
         const tasks = getTasks(config);
         try {
@@ -101,54 +103,61 @@ async function main() {
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)
 
             //Проверяем количество eth на аккаунте
-            await refuelEth(account, config.refuel_threshold, config.slippage)
+            // await refuelEth(account, config.refuel_threshold, config.slippage)
 
-            const shuffledTasks = shuffleTask(tasks)
-            showTasks(shuffledTasks, account.address)
+            // const shuffledTasks = shuffleTask(tasks)
+            // showTasks(shuffledTasks, account.address)
 
-            if(shuffledTasks.includes(task_orbiter_to_evm)) {
+            // if(shuffledTasks.includes(task_orbiter_to_evm)) {
 
-                if(privates.length !== ethPrivates.length) {
-                    throw logger.error('Количество кошельков Starknet должно быть равно количеству ETH аддрессов')
-                }
+            //     if(privates.length !== ethPrivates.length) {
+            //         throw logger.error('Количество кошельков Starknet должно быть равно количеству ETH аддрессов')
+            //     }
 
-                if(config.orbiter_amount === '0') {
-                    logger.error(`Укажите значение orbiter_amount`)
-                    return
-                }
+            //     if(config.orbiter_amount === '0') {
+            //         logger.error(`Укажите значение orbiter_amount`)
+            //         return
+            //     }
 
-                const evmAddress = new ethers.Wallet(ethPrivates[i]).address
+            //     const evmAddress = new ethers.Wallet(ethPrivates[i]).address
 
-                if(!evmAddress) {
-                    logger.error('Заполните evm аддресса в data.json')
-                    return
-                }
+            //     if(!evmAddress) {
+            //         logger.error('Заполните evm аддресса в data.json')
+            //         return
+            //     }
 
-                config.orbiter_to_evm_address = evmAddress
-            }
+            //     config.orbiter_to_evm_address = evmAddress
+            // }
 
-            if(shuffledTasks.includes(task_okx_deposit)) {
+            // if(shuffledTasks.includes(task_okx_deposit)) {
 
-                if(privates.length !== okxAddresses.length) {
-                    throw logger.error('Количество кошельков Starknet должно быть равно количеству субаккаунтов OKX')
-                }
+            //     if(privates.length !== okxAddresses.length) {
+            //         throw logger.error('Количество кошельков Starknet должно быть равно количеству субаккаунтов OKX')
+            //     }
 
-                const okx_subAcc = okxAddresses[i]
+            //     const okx_subAcc = okxAddresses[i]
 
-                if(!okx_subAcc) {
-                    logger.error('Заполните OKX аддресса')
-                    return
-                }
+            //     if(!okx_subAcc) {
+            //         logger.error('Заполните OKX аддресса')
+            //         return
+            //     }
 
-                config.okx_deposit_address = okx_subAcc
-            }
+            //     config.okx_deposit_address = okx_subAcc
+            // }
 
-            await startTasks(shuffledTasks, account, config)
+            // await startTasks(shuffledTasks, account, config)
+
+            resultIndicator(counter, privates.length)
+            counter++
 
         } catch(e: any) {
             if(e !== undefined) {
                 logger.error(e)
             }
+
+            resultIndicator(counter, privates.length)
+            counter++
+
         }
         await sleep(config.sleep_account[0], config.sleep_account[1])
     }

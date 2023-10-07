@@ -3,6 +3,7 @@ import * as fs from 'fs'
 import { Account, Provider, constants } from 'starknet';
 import { JsonRpcApiProvider, ethers } from 'ethers';
 import { config } from '../cfg';
+import colors from 'colors';
 
 export function sleep(sleep_min: number, sleep_max: number) {
     const seconds = getRandomInt(sleep_min, sleep_max) 
@@ -85,4 +86,17 @@ export function getProvider() {
     }
 
     return provider
+}
+
+export function printCenteredText(text: string, colors?: any) {
+    const terminalWidth = process.stdout.columns; // Получаем ширину консоли
+    const padding = Math.floor((terminalWidth - text.length) / 2); // Вычисляем количество пробелов для выравнивания текста по центру
+    const centeredText = ' '.repeat(padding) + text; // Добавляем пробелы перед текстом
+    colors?console.log(colors(centeredText)): console.log(centeredText); // Выводим текст в консоль
+}
+
+export function resultIndicator(counter: number, allNumber: number) {
+    printCenteredText(colors.blue('-----------------------------------'))
+    printCenteredText(colors.blue(`|              Done: ${counter}/${allNumber}            |`))
+    printCenteredText(colors.blue('-----------------------------------'))
 }

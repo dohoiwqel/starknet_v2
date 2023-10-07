@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { Starkgate } from "../src/Starkgate/starkgate"
-import { getEthGasPrice, getProvider, read, sleep, waitForGas } from "../utils/utils"
+import { getEthGasPrice, getProvider, read, resultIndicator, sleep, waitForGas } from "../utils/utils"
 import { MyAccounts } from "../src/wallets/myAccounts"
 import { Provider, constants } from "starknet"
 import { logger } from "../logger/logger"
@@ -36,6 +36,8 @@ async function main() {
         throw logger.error(`Введено 0 приватных ключей от EVM`, undefined, 'Starkgate')
     }
 
+    let counter = 1
+
     for(let [i, ethPrivate] of ethPrivates.entries()) {
         const wallet = new ethers.Wallet(ethPrivate, ethProvider)
         const {account, privateKey} = await myAccounts.get_account_without_checkDeploy(privates[i])
@@ -61,6 +63,9 @@ async function main() {
         await starkgate.bridge(l2Address, value.toString(), amount.toString(), gasPrice!)
         
         await sleep(config.sleep_account[0], config.sleep_account[1])
+
+        resultIndicator(counter, privates.length)
+        counter++
     }
 
     return
