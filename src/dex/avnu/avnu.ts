@@ -1,11 +1,8 @@
-import { Contract } from "starknet";
-import { denomNumber } from "../../denominator";
 import { Dex } from "../../dex";
 import { logger } from "../../logger/logger";
 import { Token } from "../../tokens/tokens";
 import * as avnuSdk from '@avnu/avnu-sdk'
 import { ethers } from "ethers";
-import { ABI } from "./ABI";
 
 export class Avnu extends Dex {
     
