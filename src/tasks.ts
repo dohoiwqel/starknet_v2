@@ -5,19 +5,20 @@ import { ethers } from "ethers";
 import { makeDenominator } from "./denominator";
 import { L0kswap } from "./dex/10kSwap/l0kswap";
 import { Jediswap } from "./dex/jediswap/jediswap";
-import { logger } from "../logger/logger";
+import { logger } from "./logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
 import { UpgradeImplementation } from "./Upgrade/upgrade";
-import { getRandomInt } from "../utils/utils";
+import { getRandomInt } from "./utils/utils";
 import { Orbiter } from "./orbiter/orbiter";
-import { Iconfig } from "../interfaces/iconfig";
+import { Iconfig } from "./interfaces/iconfig";
 import { OKX } from "./okx/okx_protocol";
 import { StarkId } from "./starkId/starkId";
+import { Avnu } from "./dex/avnu/avnu";
 
 export type Task = (account: Account, config: Iconfig) => Promise<void>
 
-export async function task_mySwap(account: Account, config: Iconfig) {
+export async function task_mySwap(account: Account, config: Iconfig): Promise<void> {
 
     const mySwap = new Myswap(account, "mySwap")
     const finder = new Finder(account)
@@ -57,7 +58,7 @@ export async function task_mySwap(account: Account, config: Iconfig) {
 
         if(ethToTrade < 0n) {
             await mySwap.refuelETH(config.slippage)
-            return
+            return await task_mySwap(account, config)
         }
 
         const executionFee = await mySwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
@@ -113,9 +114,16 @@ export async function task_10kSwap(account: Account, config: Iconfig): Promise<v
         const executionFee = await l0kSwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
         ethToTrade -= executionFee.suggestedMaxFee!
 
+
         if(ethToTrade < 0n) {
             await l0kSwap.refuelETH(config.slippage)
             return
+        }
+        
+        
+        if(ethToTrade < 0n) {
+            await l0kSwap.refuelETH(config.slippage)
+            return await task_10kSwap(account, config)
         }
         
         await l0kSwap.swap(ethToTrade, eToken, tokenTo, slippage)
@@ -123,7 +131,7 @@ export async function task_10kSwap(account: Account, config: Iconfig): Promise<v
     }
 }
 
-export async function task_jediSwap(account: Account, config: Iconfig) {
+export async function task_jediSwap(account: Account, config: Iconfig): Promise<void> {
 
     const jediSwap = new Jediswap(account, "jediSwap")
     const finder = new Finder(account)
@@ -157,7 +165,7 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
 
         if(ethToTrade < 0n) {
             await jediSwap.refuelETH(config.slippage)
-            return
+            return await task_jediSwap(account, config)
         }
 
         const executionFee = await jediSwap.getExecutionFee(ethToTrade, eToken, tokenTo, slippage)
@@ -165,7 +173,7 @@ export async function task_jediSwap(account: Account, config: Iconfig) {
 
         if(ethToTrade < 0n) {
             await jediSwap.refuelETH(config.slippage)
-            return
+            return await task_jediSwap(account, config)
         }
 
         await jediSwap.swap(ethToTrade, eToken, tokenTo, slippage)
@@ -238,4 +246,53 @@ export async function task_okx_deposit(account: Account, config: Iconfig) {
 export async function task_mint_starkId(account: Account, config: Iconfig) {
     const starkId = new StarkId(account, `mint_starkId`)
     await starkId.mint()
+}
+
+export async function task_avnu(account: Account, config: Iconfig): Promise<void> {
+
+    const avnu = new Avnu(account, "Avnu")
+    const finder = new Finder(account)
+    let stableSwap = config.stableSwap
+    const slippage = config.slippage >= 1? 1: config.slippage //Для авну слиппейдж должен быть <= 1 
+
+    let {token, balance} = await finder.getHighestBalanceToken()
+    
+    if(token.ticker === 'ETH') {
+        stableSwap = false
+    }   
+
+    if(stableSwap) {
+        
+        if(config.stableSwap_full_balance === false) {
+            const stableAmount = getRandomInt(config.stable_amount_to_swap[0], config.stable_amount_to_swap[1])
+            balance = ethers.parseUnits(stableAmount.toString(), token.decimals)
+        }
+
+        const tokenTo = avnu.getTokenTo(token)
+        await avnu.swap(balance, token, tokenTo, slippage)
+        return
+
+    } else {
+        let {eToken, eBalance} = await finder.getEth()
+        const ethToRemain = "0.002"
+
+        let ethToTrade = eBalance - BigInt(ethers.parseEther(ethToRemain).toString())
+        const tokenTo = avnu.getTokenTo(eToken)
+
+        if(ethToTrade < 0n) {
+            await avnu.refuelETH(config.slippage)
+            return await task_avnu(account, config)
+        }
+
+        const executionFee = await avnu.getExecutionFee(ethToTrade, eToken, tokenTo)
+        ethToTrade -= executionFee.suggestedMaxFee!
+
+        if(ethToTrade < 0n) {
+            await avnu.refuelETH(config.slippage)
+            return await task_avnu(account, config)
+        }
+        
+        await avnu.swap(ethToTrade, eToken, tokenTo, slippage)
+        return
+    }     
 }

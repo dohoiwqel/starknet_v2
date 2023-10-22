@@ -1,5 +1,5 @@
 import { denomNumber } from "./denominator"
-import { getEthPrice } from "./dex/oracles/oracle"
+import { getEthPrice } from "./oracles/oracle"
 import { ethers } from "ethers"
 import { Token } from "./tokens/tokens"
 import { Protocol } from "./protocol"

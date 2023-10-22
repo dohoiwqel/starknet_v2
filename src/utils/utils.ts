@@ -2,7 +2,7 @@ import readline from 'readline'
 import * as fs from 'fs'
 import { Account, Provider, constants } from 'starknet';
 import { JsonRpcApiProvider, ethers } from 'ethers';
-import { config } from '../cfg';
+import { config } from '../../cfg';
 import colors from 'colors';
 
 export function sleep(sleep_min: number, sleep_max: number) {

@@ -1,15 +1,15 @@
 import { Account, HttpError } from "starknet";
 import { Iconfig } from '../interfaces/iconfig';
-import { MyAccounts } from '../src/wallets/myAccounts';
+import { MyAccounts } from '../wallets/myAccounts';
 import { logger } from "../logger/logger";
-import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mint_starkId, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
-import { config } from "../cfg";
+import { Task, task_10kSwap, task_avnu, task_dmail, task_jediSwap, task_jediSwap_liq, task_mint_starkId, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../tasks";
+import { config } from "../../cfg";
 import { resultIndicator, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
 import { waitForGas } from "../utils/utils";
 import path from 'path'
 import { screensaver } from "./screensaver";
 import { ethers } from "ethers";
-import { refuelEth } from "../src/refuel";
+import { refuelEth } from "../refuel";
 
 function getTasks(config: Iconfig) {
     let tasks = new Array<Task>
@@ -19,7 +19,8 @@ function getTasks(config: Iconfig) {
     if(config.l0kswap) protocols.push(task_10kSwap);
     if(config.mySwap) protocols.push(task_mySwap);
     if(config.dmail) protocols.push(task_dmail);
-    if(config.mint_starkId) protocols.push(task_mint_starkId)
+    if(config.mint_starkId) protocols.push(task_mint_starkId);
+    if(config.avnu) protocols.push(task_avnu);
 
     const maxProtocolsCount = config.protocols[1] > protocols.length? protocols.length: config.protocols[1]
     const minProtocolsCount = config.protocols[0] > maxProtocolsCount? maxProtocolsCount: config.protocols[0]
@@ -36,10 +37,9 @@ function shuffleTask(tasks: Array<Task>) {
     const shuffledArr = tasks.slice()
     shuffledArr.sort(() => Math.random() - 0.5)
 
-    //Добавляем элементы, которые должны идти обязательно на заданных местах
+    //Добавляем элементы, которые должны идти обязательно на последних местах
     if(config.upgrade) shuffledArr.unshift(task_upgrade_implementation);
     if(config.orbiter_to_evm) shuffledArr.push(task_orbiter_to_evm)
-    // if(config.okx_deposit) shuffledArr.push(task_okx_deposit)
 
     return shuffledArr;
 }
@@ -88,9 +88,9 @@ async function main() {
 
     screensaver()
 
-    const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
-    const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
-    const ethPrivates = await read(path.resolve(__dirname, '..', 'ethPrivates.txt'))
+    const privates = await read(path.resolve(__dirname, '..', '..', 'privates.txt'))
+    const okxAddresses = await read(path.resolve(__dirname, '..', '..', 'okxAccount.txt'))
+    const ethPrivates = await read(path.resolve(__dirname, '..', '..', 'ethPrivates.txt'))
     
     logger.info(`Обнаружен ${privates.length} аккаунтов`)
 

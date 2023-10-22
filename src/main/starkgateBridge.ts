@@ -1,10 +1,10 @@
 import { ethers } from "ethers"
-import { Starkgate } from "../src/Starkgate/starkgate"
+import { Starkgate } from "../Starkgate/starkgate"
 import { getEthGasPrice, getProvider, read, resultIndicator, sleep, waitForGas } from "../utils/utils"
-import { MyAccounts } from "../src/wallets/myAccounts"
+import { MyAccounts } from "../wallets/myAccounts"
 import { Provider, constants } from "starknet"
 import { logger } from "../logger/logger"
-import { config } from "../cfg"
+import { config } from "../../cfg"
 import path from 'path'
 import { screensaver } from "./screensaver"
 
@@ -20,8 +20,8 @@ async function main() {
 
     screensaver()
 
-    const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
-    const ethPrivates = await read(path.resolve(__dirname, '..', 'ethPrivates.txt'))
+    const privates = await read(path.resolve(__dirname, '..', '..', 'privates.txt'))
+    const ethPrivates = await read(path.resolve(__dirname, '..', '..', 'ethPrivates.txt'))
     
     const provider = getProvider()
 

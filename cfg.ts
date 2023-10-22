@@ -1,8 +1,8 @@
-import { Iconfig } from "./interfaces/iconfig";
+import { Iconfig } from "./src/interfaces/iconfig";
 
 export const config: Iconfig = {
 
-    rpc_url: "https://starknet-mainnet.g.alchemy.com/v2/Ekse1g_j948hqjq79TAUGCkGETIxWMSI",
+    rpc_url: "",
 
     //OKX
     okx_apiKey: '',
@@ -16,7 +16,7 @@ export const config: Iconfig = {
     minGasPrice: 100, //Минимальный газ при котором софт начнет работу в GWEI прим. 100 = 100gwei
     sleep_protocols: [1, 1], //Задержка между выполнением потоколов. Случайное число [ОТ, ДО] в СЕКУНДАХ
     sleep_account: [1, 1], //Задержка между запуском аккаунтов. Случайное число [ОТ, ДО] в СЕКУНДАХ
-    refuel_threshold: "0.0035",
+    refuel_threshold: "0.0005",
 
     /* Бридж ETH через официальный мост */ 
     starkgate_amount: "0.0077",
@@ -45,12 +45,13 @@ export const config: Iconfig = {
     jediSwap: false,
     l0kswap: false,
     mySwap: false,
-    dmail: true,
-    mint_starkId: true,
+    avnu: true,
+    dmail: false,
+    mint_starkId: false,
 
     slippage: 5, //Проскальзывание в процентах 1 = 1%
 
-    stableSwap: true, //Если включено обменивает ТОЛЬКО стейблы иначе обменивает ETH на стейбл
+    stableSwap: false, //Если включено обменивает ТОЛЬКО стейблы иначе обменивает ETH на стейбл
     stableSwap_full_balance: true, //Если включено обменивает весь доступный баланс стейблов
     stable_amount_to_swap: [100, 200], //Выбирает случайно количество стейблов для свапа [ОТ, ДО]
 

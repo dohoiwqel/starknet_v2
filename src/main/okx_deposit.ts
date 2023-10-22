@@ -1,19 +1,19 @@
 import path from 'path'
 import { getProvider, read, resultIndicator, sleep } from '../utils/utils'
 import { logger } from '../logger/logger'
-import { MyAccounts } from '../src/wallets/myAccounts'
+import { MyAccounts } from '../wallets/myAccounts'
 import { Provider, constants } from 'starknet'
-import { refuelEth } from '../src/refuel'
-import { config } from '../cfg'
-import { task_okx_deposit } from '../src/tasks'
+import { refuelEth } from '../refuel'
+import { config } from '../../cfg'
+import { task_okx_deposit } from '../tasks'
 import { screensaver } from './screensaver'
 
 async function main() {
 
     screensaver()
 
-    const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
-    const okxAddresses = await read(path.resolve(__dirname, '..', 'okxAccount.txt'))
+    const privates = await read(path.resolve(__dirname, '..', '..', 'privates.txt'))
+    const okxAddresses = await read(path.resolve(__dirname, '..', '..', 'okxAccount.txt'))
     
     let counter = 1
 

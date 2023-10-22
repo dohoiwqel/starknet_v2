@@ -1,13 +1,13 @@
 import { Contract, uint256 } from "starknet";
 import { Protocol } from "../protocol";
 import { ABI } from "./ABI";
-import { get_short_address, logger } from "../../logger/logger";
+import { get_short_address, logger } from "../logger/logger";
 import { checkPayText, getMinBridgeAmount, getPayTextId, getPayTextValue, getWithHoldingFee, network } from "./bridgeData";
 import { ethers } from "ethers";
 import { Jediswap } from "../dex/jediswap/jediswap";
 import { config } from "../../cfg";
 import { makeDenominator } from "../denominator";
-import { sleep } from "../../utils/utils";
+import { sleep } from "../utils/utils";
 
 
 /**

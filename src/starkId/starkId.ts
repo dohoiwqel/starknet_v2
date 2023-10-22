@@ -1,7 +1,7 @@
 import { Contract } from "starknet";
 import { Dex } from "../dex";
 import { ABI } from "./ABI";
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 
 
 export class StarkId extends Dex {

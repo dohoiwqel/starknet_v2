@@ -1,13 +1,15 @@
 import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpError, TransactionStatus, uint256 } from "starknet";
-import { logger } from "../logger/logger";
-import { getProvider, sleep } from "../utils/utils";
+import { logger } from "./logger/logger";
+import { getProvider, sleep } from "./utils/utils";
 import { PoolToken, Token, Tokens } from "./tokens/tokens";
 import { Finder } from "./finder";
+import { getEthPrice } from "./oracles/oracle";
+
 
 export class Protocol {
 
-    protected account: Account
     public taskName: string
+    protected account: Account
     protected tokens: Tokens
     protected finder: Finder
 
@@ -16,13 +18,14 @@ export class Protocol {
         this.taskName = taskName
         this.tokens = new Tokens()
         this.finder = new Finder(this.account)
+        
     }
 
     protected async waitForTransaction(tx: string): Promise<GetTransactionReceiptResponse> {
         try {
             const provider = getProvider()
             const response = await provider.waitForTransaction(tx, {retryInterval: 10000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
-            
+
             if(response.status === 'ACCEPTED_ON_L2') {
                 return response
             
@@ -40,6 +43,10 @@ export class Protocol {
                 return await this.waitForTransaction(tx)
             }
         }
+    }
+
+    protected async getEthPrice() {
+        return await getEthPrice()
     }
 
     protected async sendTransaction(contract: Contract, functionName: string, callData: ArgsOrCalldata | undefined): Promise<GetTransactionReceiptResponse> {
@@ -109,4 +116,15 @@ export class Protocol {
             }
         }
     }
+
+    protected async simpleCall(contract: Contract, method: any, args: any[]): Promise<any> {
+        try {
+            const result = await contract.method(...args)
+            return result
+        } catch(e: any) {
+            console.log(e)
+            return this.simpleCall(contract, method, args)
+        } 
+    }
+
 }

@@ -1,4 +1,4 @@
-import { network } from "../src/orbiter/bridgeData"
+import { network } from "../orbiter/bridgeData"
 
 export interface Iconfig {
     stableSwap: boolean,
@@ -6,6 +6,7 @@ export interface Iconfig {
     jediSwap_liq: boolean,
     l0kswap: boolean,
     mySwap: boolean,
+    avnu: boolean,
     dmail: boolean,
     stable_amount_to_swap: number[], 
     slippage: number,

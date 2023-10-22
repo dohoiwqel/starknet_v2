@@ -1,6 +1,6 @@
 import { TransactionResponse, ethers } from "ethers";
 import { ABI } from './contractABI'
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 import axios from 'axios'
 
 export class Starkgate {

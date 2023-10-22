@@ -1,7 +1,7 @@
 import { Contract, HttpError } from "starknet";
 import { encoder } from "./encoder";
 import { ABI } from './ABI'
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 import { Protocol } from "../protocol";
 
 export class Dmail extends Protocol {

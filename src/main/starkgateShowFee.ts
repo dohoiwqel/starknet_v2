@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
-import { config } from "../cfg"
+import { config } from "../../cfg"
 import { logger } from "../logger/logger"
-import { Starkgate } from "../src/Starkgate/starkgate"
+import { Starkgate } from "../Starkgate/starkgate"
 import { getEthGasPrice } from "../utils/utils"
 
 async function main() {

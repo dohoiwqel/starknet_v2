@@ -3,8 +3,8 @@ import { ABI } from "./ABI";
 import { ethers } from "ethers";
 import { calculateAddressBraavos, deployBraavosAccount } from "./deploy_bravos";
 import * as XLSX from 'xlsx'
-import { logger } from "../../logger/logger";
-import { getProvider } from "../../utils/utils";
+import { logger } from "../logger/logger";
+import { getProvider } from "../utils/utils";
 
 export class MyAccounts {
 

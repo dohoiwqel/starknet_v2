@@ -1,7 +1,7 @@
 import { Account, Contract } from "starknet";
 import { ABI } from "./ABI";
 import { Protocol } from "../protocol";
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 
 
 export class UpgradeImplementation extends Protocol {

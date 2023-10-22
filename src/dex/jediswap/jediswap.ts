@@ -3,9 +3,9 @@ import { contractABI } from './contractABI';
 import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { l0_or_jediSWAP } from '../../dex';
-import { getEthPrice } from '../oracles/oracle';
+import { getEthPrice } from '../../oracles/oracle';
 import axios from 'axios'
-import { logger } from '../../../logger/logger';
+import { logger } from '../../logger/logger';
 import { Token } from '../../tokens/tokens';
 import { poolTokenABI } from './poolTokenABI';
 
@@ -76,8 +76,8 @@ export class Jediswap extends l0_or_jediSWAP {
             ]
     
             const contract = new Contract(this.ABI, this.contractAddress, this.account) 
-            
             return await contract.estimate('swap_exact_tokens_for_tokens', callData)
+
         } catch(e: any) {
             if(e.message && e.message.includes('nonce')) {
                 return await this.getExecutionFee(amountIn, tokenFrom, tokenTo, slippage)

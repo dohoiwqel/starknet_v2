@@ -1,6 +1,6 @@
 import { logger } from "../logger/logger"
 import { input } from "../utils/querys";
-import { MyAccounts } from "../src/wallets/myAccounts"
+import { MyAccounts } from "../wallets/myAccounts"
 import { screensaver } from "./screensaver";
 
 async function main() {

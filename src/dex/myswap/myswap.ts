@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { Dex } from '../../dex';
 import axios from 'axios'
-import { logger } from '../../../logger/logger';
+import { logger } from '../../logger/logger';
 import { Token } from '../../tokens/tokens';
 
 export class Myswap extends Dex {

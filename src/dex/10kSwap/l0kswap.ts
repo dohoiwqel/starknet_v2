@@ -2,7 +2,7 @@ import { Contract, EstimateFeeResponse, HttpError, uint256 } from "starknet";
 import { contractABI } from './contractABI';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { l0_or_jediSWAP } from '../../dex';
-import { logger } from "../../../logger/logger";
+import { logger } from "../../logger/logger";
 import { Token } from "../../tokens/tokens";
 import { ethers } from "ethers";
 

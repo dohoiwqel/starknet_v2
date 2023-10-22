@@ -1,10 +1,10 @@
 import axios from 'axios';
 import crypto from 'crypto';
-import { config } from '../cfg';
+import { config } from '../../cfg';
 import { logger } from '../logger/logger';
 import { getRandomFloat, read, sleep } from '../utils/utils';
 import path from 'path'
-import { MyAccounts } from '../src/wallets/myAccounts';
+import { MyAccounts } from '../wallets/myAccounts';
 import { Provider, constants } from 'starknet';
 import { screensaver } from './screensaver';
 
@@ -96,7 +96,7 @@ async function main() {
 
     screensaver()
     
-    const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
+    const privates = await read(path.resolve(__dirname, '..', '..', 'privates.txt'))
     const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
 
     const okx = new OKX(config.okx_apiKey, config.okx_passPhrase, config.okx_secretKey)
