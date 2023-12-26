@@ -1,6 +1,6 @@
 import readline from 'readline'
 import * as fs from 'fs'
-import { Account, Provider, constants } from 'starknet';
+import { Account, Provider, RpcProvider, constants } from 'starknet';
 import { JsonRpcApiProvider, ethers } from 'ethers';
 import { config } from '../cfg';
 import colors from 'colors';
@@ -49,7 +49,7 @@ export function getRandomElementFromArray(fromArray: any[], n: number, mutableAr
 
 export async function waitForGas(account: Account, minGasPrice: number) {
     let gasPrice: number
-    const provider = new Provider({ sequencer: { baseUrl: constants.BaseUrl.SN_MAIN } })
+    const provider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }})
 
     while(true) {
         const block = await provider.getBlock("latest")
@@ -82,7 +82,7 @@ export function getProvider() {
     if(config.rpc_url) {
         provider = new Provider({rpc: {nodeUrl: config.rpc_url} })
     } else {
-        provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+        provider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }});
     }
 
     return provider
