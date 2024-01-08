@@ -97,7 +97,7 @@ async function main() {
     screensaver()
     
     const privates = await read(path.resolve(__dirname, '..', 'privates.txt'))
-    const provider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+    const provider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }})
 
     const okx = new OKX(config.okx_apiKey, config.okx_passPhrase, config.okx_secretKey)
 

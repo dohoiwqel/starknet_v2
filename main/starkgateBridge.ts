@@ -2,7 +2,6 @@ import { ethers } from "ethers"
 import { Starkgate } from "../src/Starkgate/starkgate"
 import { getEthGasPrice, getProvider, read, resultIndicator, sleep, waitForGas } from "../utils/utils"
 import { MyAccounts } from "../src/wallets/myAccounts"
-import { Provider, constants } from "starknet"
 import { logger } from "../logger/logger"
 import { config } from "../cfg"
 import path from 'path'

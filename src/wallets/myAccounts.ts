@@ -12,7 +12,7 @@ export class MyAccounts {
     private standartProvider: Provider
 
     constructor() {
-        this.createProvider = new Provider({ sequencer: { network: constants.NetworkName.SN_MAIN } })
+        this.createProvider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }})
         this.standartProvider = getProvider()
     }
 
