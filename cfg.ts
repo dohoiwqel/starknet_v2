@@ -42,10 +42,10 @@ export const config: Iconfig = {
         если указано [1, 2] или [1, 4] будет взято случайное число протоколов от 1 до 2 или от 1 до 3 соотвественно 
     */
     protocols: [5, 5], //Выбирает случайное количество протоколов [ОТ, ДО] из включенных НИЖЕ.
-    jediSwap: true,
-    l0kswap: true,
+    jediSwap: false,
+    l0kswap: false,
     mySwap: false,
-    dmail: false,
+    dmail: true,
     mint_starkId: true,
 
     slippage: 5, //Проскальзывание в процентах 1 = 1%

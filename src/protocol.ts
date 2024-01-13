@@ -49,6 +49,11 @@ export class Protocol {
             return await this.waitForTransaction(receipt.transaction_hash)
 
         } catch(e: any) {
+            
+            if(e.message && e.message.includes(`Account balance is smaller than the transaction's max_fee`)) {
+                throw new Error(`Account balance is smaller than the transaction's max_fee`)
+            }
+
             if(e.message && e.message.includes('nonce')) {
                 return await this.sendTransaction(contract, functionName, callData)
             }
