@@ -1,11 +1,11 @@
 import { Account, HttpError } from "starknet";
-import { Iconfig } from '../interfaces/iconfig';
+import { Iconfig } from '../src/interfaces/iconfig';
 import { MyAccounts } from '../src/wallets/myAccounts';
-import { logger } from "../logger/logger";
+import { logger } from "../src/logger/logger";
 import { Task, task_10kSwap, task_dmail, task_jediSwap, task_jediSwap_liq, task_mint_starkId, task_mySwap, task_okx_deposit, task_orbiter_to_evm, task_upgrade_implementation } from "../src/tasks";
 import { config } from "../cfg";
-import { resultIndicator, getRandomElementFromArray, getRandomInt, read, sleep } from "../utils/utils";
-import { waitForGas } from "../utils/utils";
+import { resultIndicator, getRandomElementFromArray, getRandomInt, read, sleep } from "../src/utils/utils";
+import { waitForGas } from "../src/utils/utils";
 import path from 'path'
 import { screensaver } from "./screensaver";
 import { ethers } from "ethers";
@@ -69,17 +69,20 @@ async function runTask(task: Task, account: Account, config: Iconfig): Promise<v
 }
 
 async function startTasks(tasks: Array<Task>, account: Account, config: Iconfig) {
-    
+
     for(let task of tasks) {
         try {
-            await waitForGas(account, config.minGasPrice)
+            await waitForGas(config.minGasPrice)
             await runTask(task, account, config)
             await sleep(config.sleep_protocols[0], config.sleep_protocols[1])
+        
         } catch(e) {
             if(e !== undefined) {
                 logger.error(e, account.address, task.name)
                 console.log(e)
             }
+
+            await sleep(5, 5)
         }
     }
 }
@@ -97,7 +100,9 @@ async function main() {
     let counter = 1
 
     for(let [i, privateKeyOrMnemonic] of privates.entries()) {
-        const tasks = getTasks(config);
+        
+        const tasks = getTasks(config)
+
         try {
             const myAccounts = new MyAccounts()
             const {account, privateKey} = await myAccounts.getAccount(privateKeyOrMnemonic)

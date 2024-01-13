@@ -1,8 +1,8 @@
 import { ethers } from "ethers"
 import { Starkgate } from "../src/Starkgate/starkgate"
-import { getEthGasPrice, getProvider, read, resultIndicator, sleep, waitForGas } from "../utils/utils"
+import { getEthGasPrice, getProvider, read, resultIndicator, sleep, waitForGas } from "../src/utils/utils"
 import { MyAccounts } from "../src/wallets/myAccounts"
-import { logger } from "../logger/logger"
+import { logger } from "../src/logger/logger"
 import { config } from "../cfg"
 import path from 'path'
 import { screensaver } from "./screensaver"

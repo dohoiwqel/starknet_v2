@@ -1,7 +1,7 @@
 import { Account, Contract } from "starknet";
 import { ABI } from "./ABI";
 import { Protocol } from "../protocol";
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 
 
 export class UpgradeImplementation extends Protocol {
@@ -29,8 +29,8 @@ export class UpgradeImplementation extends Protocol {
 
         try {
             const txReceipt = await this.sendTransaction(contract, 'upgrade', callData)
-            const txResponse = await this.waitForTransaction(txReceipt.transaction_hash)
-            logger.success(`Аккаунт обновлен tx: ${txResponse.transaction_hash}`, this.account.address, this.taskName)
+            const txResponse = await this.waitForTransaction(txReceipt)
+            logger.success(`Аккаунт обновлен tx: ${txResponse}`, this.account.address, this.taskName)
             
         } catch(e) {
             throw logger.error(`Не удалось обновить аккаунт ${e}`, this.account.address, this.taskName)

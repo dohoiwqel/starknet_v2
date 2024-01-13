@@ -1,8 +1,8 @@
 import readline from 'readline'
 import * as fs from 'fs'
-import { Account, Provider, RpcProvider, constants } from 'starknet';
+import { RpcProvider } from 'starknet';
 import { JsonRpcApiProvider, ethers } from 'ethers';
-import { config } from '../cfg';
+import { config } from '../../cfg';
 import colors from 'colors';
 
 export function sleep(sleep_min: number, sleep_max: number) {
@@ -47,19 +47,32 @@ export function getRandomElementFromArray(fromArray: any[], n: number, mutableAr
     return mutableArray;
 }
 
-export async function waitForGas(account: Account, minGasPrice: number) {
+export async function waitForGas(minGasPrice: number) {
     let gasPrice: number
-    const provider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }})
+    const provider = getDefaultProvider()
 
     while(true) {
-        const block = await provider.getBlock("latest")
-        gasPrice = Math.round(Number(ethers.formatUnits(block.gas_price!, "gwei")))
-        if(gasPrice > minGasPrice) {
-            console.log(`Ждем пока газ опустится до ${minGasPrice}. Текущий газ ${gasPrice} Gwei`)
-            await new Promise(resolve => {setTimeout(() => resolve(' '), 10_000)})
-        } else {
-            break
-        }
+        try {
+            const block = await provider.getBlockWithTxHashes("latest")
+            gasPrice = Math.round(Number(ethers.formatUnits(block.l1_gas_price.price_in_wei, "gwei")))
+            if(gasPrice > minGasPrice) {
+                console.log(`Ждем пока газ опустится до ${minGasPrice}. Текущий газ ${gasPrice} Gwei`)
+                await new Promise(resolve => {setTimeout(() => resolve(' '), 10_000)})
+            } else {
+                break
+            }
+        
+        }catch(e: any) {
+            
+            if(e instanceof Error && e.message.includes('ETIMEDOUT')) {
+                console.log(e.message)
+                await sleep(3, 3)
+            } else {
+                throw e
+            } 
+
+        } 
+
     }
 
     // console.log(`Текущий газ ${gasPrice!} Gwei начинаем работу с аккаунтом ${account.address}`)
@@ -76,13 +89,17 @@ export function getRandomFloat(min: number, max: number): number {
     return Math.random() * (max - min) + min;
 }
 
+export function getDefaultProvider() {
+    return new RpcProvider({nodeUrl: "https://starknet-mainnet.public.blastapi.io/" });
+}
+
 export function getProvider() {
-    let provider: Provider
+    let provider: RpcProvider
     
     if(config.rpc_url) {
-        provider = new Provider({rpc: {nodeUrl: config.rpc_url} })
+        provider = new RpcProvider({nodeUrl: config.rpc_url})
     } else {
-        provider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }});
+        provider = getDefaultProvider()
     }
 
     return provider

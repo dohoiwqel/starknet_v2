@@ -5,7 +5,7 @@ import { denomNumber, makeDenominator } from '../../denominator';
 import { l0_or_jediSWAP } from '../../dex';
 import { getEthPrice } from '../oracles/oracle';
 import axios from 'axios'
-import { logger } from '../../../logger/logger';
+import { logger } from '../../logger/logger';
 import { Token } from '../../tokens/tokens';
 import { poolTokenABI } from './poolTokenABI';
 
@@ -40,7 +40,7 @@ export class Jediswap extends l0_or_jediSWAP {
             const receipt = await this.sendTransaction(contract, 'swap_exact_tokens_for_tokens', callData)
             const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
             const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
-            logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
+            logger.success(`Выполнен свап tx: ${receipt} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
             console.log([
                 amountIn, 
@@ -220,7 +220,7 @@ export class Jediswap extends l0_or_jediSWAP {
 
         try {
             const receipt = await this.sendTransaction(contract, "add_liquidity", callData)
-            logger.success(`Залили ликвидность в JediSwap ${receipt.transaction_hash}`, this.account.address, this.taskName)
+            logger.success(`Залили ликвидность в JediSwap ${receipt}`, this.account.address, this.taskName)
         } catch(e) {
             console.log([
                 this.tokens.USDT.contractAddress,
@@ -287,9 +287,9 @@ export class Jediswap extends l0_or_jediSWAP {
 
         try {
             const txReceipt = await this.sendTransaction(contract, 'remove_liquidity', callData)
-            const txResponse = await this.waitForTransaction(txReceipt.transaction_hash)
+            const txResponse = await this.waitForTransaction(txReceipt)
 
-            logger.success(`Забрали ликвидность tx: ${txResponse.transaction_hash}`, this.account.address, this.taskName)
+            logger.success(`Забрали ликвидность tx: ${txResponse}`, this.account.address, this.taskName)
         } catch(e) {
             throw logger.error(`Не удалось достать ликвидность ${e}`, this.account.address, this.taskName)
         }

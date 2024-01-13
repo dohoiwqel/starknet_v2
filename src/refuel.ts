@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { Account } from "starknet"
-import { logger } from "../logger/logger"
+import { logger } from "./logger/logger"
 import { makeDenominator } from "./denominator"
 import { Jediswap } from "./dex/jediswap/jediswap"
 import { Finder } from "./finder"

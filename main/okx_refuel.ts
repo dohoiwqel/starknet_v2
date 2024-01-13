@@ -1,8 +1,8 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import { config } from '../cfg';
-import { logger } from '../logger/logger';
-import { getRandomFloat, read, sleep } from '../utils/utils';
+import { logger } from '../src/logger/logger';
+import { getRandomFloat, read, sleep } from '../src/utils/utils';
 import path from 'path'
 import { MyAccounts } from '../src/wallets/myAccounts';
 import { Provider, constants } from 'starknet';

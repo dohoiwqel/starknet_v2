@@ -5,13 +5,13 @@ import { ethers } from "ethers";
 import { makeDenominator } from "./denominator";
 import { L0kswap } from "./dex/10kSwap/l0kswap";
 import { Jediswap } from "./dex/jediswap/jediswap";
-import { logger } from "../logger/logger";
+import { logger } from "./logger/logger";
 import { Dmail } from "./dmail/dmail";
 import { getRandomNumber } from "./randomNumber";
 import { UpgradeImplementation } from "./Upgrade/upgrade";
-import { getRandomInt } from "../utils/utils";
+import { getRandomInt } from "./utils/utils";
 import { Orbiter } from "./orbiter/orbiter";
-import { Iconfig } from "../interfaces/iconfig";
+import { Iconfig } from "./interfaces/iconfig";
 import { OKX } from "./okx/okx_protocol";
 import { StarkId } from "./starkId/starkId";
 

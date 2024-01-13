@@ -1,4 +1,4 @@
-import { network } from "../src/orbiter/bridgeData"
+import { network } from "../orbiter/bridgeData"
 
 export interface Iconfig {
     stableSwap: boolean,

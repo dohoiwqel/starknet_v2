@@ -1,6 +1,6 @@
-import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpError, TransactionStatus, uint256 } from "starknet";
-import { logger } from "../logger/logger";
-import { getProvider, sleep } from "../utils/utils";
+import { Account, ArgsOrCalldata, Contract, GetTransactionReceiptResponse, HttpError, TransactionFinalityStatus, TransactionStatus, uint256 } from "starknet";
+import { logger } from "./logger/logger";
+import { getProvider, sleep } from "./utils/utils";
 import { PoolToken, Token, Tokens } from "./tokens/tokens";
 import { Finder } from "./finder";
 
@@ -18,21 +18,21 @@ export class Protocol {
         this.finder = new Finder(this.account)
     }
 
-    protected async waitForTransaction(tx: string): Promise<GetTransactionReceiptResponse> {
+    protected async waitForTransaction(tx: string): Promise<string> {
         try {
             const provider = getProvider()
-            const response = await provider.waitForTransaction(tx, {retryInterval: 10000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
+            const response = await provider.waitForTransaction(tx, {retryInterval: 10000, successStates: [TransactionFinalityStatus.ACCEPTED_ON_L2]})
+            return response.transaction_hash
+            // if(response.status === 'ACCEPTED_ON_L2') {
+            //     return response
             
-            if(response.status === 'ACCEPTED_ON_L2') {
-                return response
-            
-            } else if(response.status === 'REJECTED') {
-                throw new Error(`Не удалось послать транзакцию ${response.transaction_hash}`);
+            // } else if(response.status === 'REJECTED') {
+            //     throw new Error(`Не удалось послать транзакцию ${response.transaction_hash}`);
 
-            } else {
-                await sleep(2, 2)
-                return await this.waitForTransaction(tx)
-            }
+            // } else {
+            //     await sleep(2, 2)
+            //     return await this.waitForTransaction(tx)
+            // }
         } catch(e: any) {
             if(e.message && e.message.includes('Не удалось послать транзакцию')) {
                 throw logger.error(e.message)
@@ -42,7 +42,7 @@ export class Protocol {
         }
     }
 
-    protected async sendTransaction(contract: Contract, functionName: string, callData: ArgsOrCalldata | undefined): Promise<GetTransactionReceiptResponse> {
+    protected async sendTransaction(contract: Contract, functionName: string, callData: ArgsOrCalldata | undefined): Promise<string> {
         try {
             const nonce = await this.account.getNonce()
             const receipt = await contract.invoke(functionName, callData, {nonce: nonce})
@@ -86,7 +86,7 @@ export class Protocol {
 
         try {
             const receipt = await this.sendTransaction(contract, "approve", callData)
-            logger.success(`Выполнен аппрув tx: ${receipt.transaction_hash}`, this.account.address, this.taskName)
+            logger.success(`Выполнен аппрув tx: ${receipt}`, this.account.address, this.taskName)
         } catch(e) {
             if(e instanceof HttpError) {
                 await sleep(5, 10)

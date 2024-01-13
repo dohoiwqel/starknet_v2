@@ -1,5 +1,5 @@
-import { logger } from "../logger/logger"
-import { input } from "../utils/querys";
+import { logger } from "../src/logger/logger"
+import { input } from "../src/utils/querys";
 import { MyAccounts } from "../src/wallets/myAccounts"
 import { screensaver } from "./screensaver";
 

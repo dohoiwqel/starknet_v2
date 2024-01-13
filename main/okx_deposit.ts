@@ -1,6 +1,6 @@
 import path from 'path'
-import { read, resultIndicator, sleep } from '../utils/utils'
-import { logger } from '../logger/logger'
+import { read, resultIndicator, sleep } from '../src/utils/utils'
+import { logger } from '../src/logger/logger'
 import { MyAccounts } from '../src/wallets/myAccounts'
 import { refuelEth } from '../src/refuel'
 import { config } from '../cfg'

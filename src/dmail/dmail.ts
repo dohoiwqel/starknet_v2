@@ -1,7 +1,7 @@
 import { Contract, HttpError } from "starknet";
 import { encoder } from "./encoder";
 import { ABI } from './ABI'
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 import { Protocol } from "../protocol";
 
 export class Dmail extends Protocol {
@@ -44,7 +44,7 @@ export class Dmail extends Protocol {
 
             try {
                 const receipt = await this.sendTransaction(contract, "transaction", callData)
-                logger.success(`Отправлено письмо ${receipt.transaction_hash}`, this.account.address, this.taskName)
+                logger.success(`Отправлено письмо ${receipt}`, this.account.address, this.taskName)
             } catch(e: any) {
                 logger.error(`Не удалось отправить письмо ${e}`, this.account.address, this.taskName)
                 

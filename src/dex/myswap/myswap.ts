@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { Dex } from '../../dex';
 import axios from 'axios'
-import { logger } from '../../../logger/logger';
+import { logger } from '../../logger/logger';
 import { Token } from '../../tokens/tokens';
 
 export class Myswap extends Dex {
@@ -116,7 +116,7 @@ export class Myswap extends Dex {
             const receipt = await this.sendTransaction(contract, "swap", callData)
             const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
             const prettyAmountOut = ethers.formatUnits(minAmountIn, tokenTo.decimals)
-            logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
+            logger.success(`Выполнен свап tx: ${receipt} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e) {
             console.log([
                 poolId, 

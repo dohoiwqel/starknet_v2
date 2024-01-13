@@ -13,6 +13,7 @@ import {
     InvocationsSignerDetails,
     Provider,
     RawCalldata,
+    RpcProvider,
     constants,
     ec,
     hash,
@@ -115,7 +116,7 @@ import {
   
   export async function estimateBraavosAccountDeployFee(
     privateKeyBraavos: BigNumberish,
-    provider: Provider,
+    provider: RpcProvider,
     { blockIdentifier, skipValidate }: EstimateFeeDetails = {}
   ): Promise<bigint> {
     const version = hash.feeTransactionVersion;
@@ -149,7 +150,6 @@ import {
       { ...payload },
       { version, nonce },
       blockIdentifier,
-      skipValidate
     );
     const suggestedMaxFee = stark.estimatedFeeToMaxFee(response.overall_fee);
   
@@ -158,7 +158,7 @@ import {
   
   export async function deployBraavosAccount(
     privateKeyBraavos: BigNumberish,
-    provider: Provider,
+    provider: RpcProvider,
     max_fee?: BigNumberish
   ): Promise<DeployContractResponse> {
     const nonce = constants.ZERO;

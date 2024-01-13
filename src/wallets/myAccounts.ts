@@ -1,25 +1,25 @@
-import { Account, Contract, Provider, SequencerProvider, constants, ec, transaction, uint256, ProviderInterface, stark, GatewayError, TransactionStatus } from "starknet";
+import { Account, Contract, TransactionFinalityStatus, RpcProvider, constants } from "starknet";
 import { ABI } from "./ABI";
 import { ethers } from "ethers";
 import { calculateAddressBraavos, deployBraavosAccount } from "./deploy_bravos";
 import * as XLSX from 'xlsx'
-import { logger } from "../../logger/logger";
-import { getProvider } from "../../utils/utils";
+import { logger } from "../logger/logger";
+import { getProvider, getDefaultProvider } from "../utils/utils";
 
 export class MyAccounts {
 
-    private createProvider: Provider
-    private standartProvider: Provider
+    private createProvider: RpcProvider
+    private standartProvider: RpcProvider
 
     constructor() {
-        this.createProvider = new Provider({rpc: {nodeUrl: "https://starknet-mainnet.public.blastapi.io/rpc/v0.5" }})
+        this.createProvider = getDefaultProvider()
         this.standartProvider = getProvider()
     }
 
     async deploy(account: Account, privateKey: string) {
         try {
             const txHash = await deployBraavosAccount(privateKey, this.createProvider!)
-            await this.createProvider.waitForTransaction(txHash.transaction_hash, {retryInterval: 10000, successStates: [TransactionStatus.ACCEPTED_ON_L2]})
+            await this.createProvider.waitForTransaction(txHash.transaction_hash, {retryInterval: 10000, successStates: [TransactionFinalityStatus.ACCEPTED_ON_L1]})
             logger.success(`Задеплоен аккаунт tx: ${txHash.transaction_hash}`, account.address)
             account = new Account(this.createProvider, account.address, privateKey)
             return {account: account, privateKey: privateKey}
@@ -52,7 +52,7 @@ export class MyAccounts {
 
     private EIP2645Hashing(key0: string) {
         const N = BigInt(2) ** BigInt(256);
-        const starkCurveOrder = BigInt(`0x${constants.EC_ORDER}`);
+        const starkCurveOrder = BigInt(`0x${'800000000000010FFFFFFFFFFFFFFFFB781126DCAE7B2321E66A241ADC64D2F'}`);
     
         const N_minus_n = N - (N % starkCurveOrder);
         for (let i = 0; ; i++) {

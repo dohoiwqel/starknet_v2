@@ -1,5 +1,5 @@
 import { Account, Contract, uint256 } from "starknet";
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 import { Token, Tokens } from "../tokens/tokens";
 
 export class Finder {

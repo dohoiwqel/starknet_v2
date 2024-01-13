@@ -2,12 +2,12 @@ import axios from "axios"
 import crypto from 'crypto'
 import { Protocol } from "../protocol"
 import { Account, Contract, uint256 } from "starknet"
-import { logger } from "../../logger/logger"
+import { logger } from "../logger/logger"
 import { Jediswap } from "../dex/jediswap/jediswap"
 import { makeDenominator } from "../denominator"
 import { config } from "../../cfg"
 import { ethers } from "ethers"
-import { sleep } from "../../utils/utils"
+import { sleep } from "../utils/utils"
 
 export class OKX extends Protocol {
     
@@ -63,7 +63,7 @@ export class OKX extends Protocol {
 
         try {
             const tx = await this.sendTransaction(contract, 'transfer', callData)
-            logger.success(`Выполнен депозит ${tx.transaction_hash}`, this.account.address, this.taskName)
+            logger.success(`Выполнен депозит ${tx}`, this.account.address, this.taskName)
         } catch(e) {
             throw logger.error(`Не удалось выполнить депозит на okx ${e}`)
         }

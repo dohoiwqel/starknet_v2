@@ -1,7 +1,7 @@
 import { Contract } from "starknet";
 import { Dex } from "../dex";
 import { ABI } from "./ABI";
-import { logger } from "../../logger/logger";
+import { logger } from "../logger/logger";
 
 
 export class StarkId extends Dex {
@@ -17,8 +17,7 @@ export class StarkId extends Dex {
 
         try {
             const txResponse = await this.sendTransaction(contract, 'mint', callData)
-            const txReceipt = await this.waitForTransaction(txResponse.transaction_hash)
-            logger.success(`Сминтили StarknetId tx: ${txReceipt.transaction_hash}`, this.account.address, this.taskName)
+            logger.success(`Сминтили StarknetId tx: ${txResponse}`, this.account.address, this.taskName)
         } catch(e) {
             throw logger.error(`Не удалось сминтить StarknetId ${e}`, this.account.address, this.taskName)
         } 

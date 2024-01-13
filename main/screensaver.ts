@@ -1,7 +1,7 @@
 // import terminalLink from 'terminal-link';
 import terminalLink = require('terminal-link');
 import colors from 'colors';
-import { printCenteredText } from '../utils/utils';
+import { printCenteredText } from '../src/utils/utils';
 
 export function screensaver() {
     console.log('')

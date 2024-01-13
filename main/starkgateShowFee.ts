@@ -1,8 +1,8 @@
 import { ethers } from "ethers"
 import { config } from "../cfg"
-import { logger } from "../logger/logger"
+import { logger } from "../src/logger/logger"
 import { Starkgate } from "../src/Starkgate/starkgate"
-import { getEthGasPrice } from "../utils/utils"
+import { getEthGasPrice } from "../src/utils/utils"
 
 async function main() {
     const starkgate = new Starkgate()

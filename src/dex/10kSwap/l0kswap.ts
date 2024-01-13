@@ -2,7 +2,7 @@ import { Contract, EstimateFeeResponse, HttpError, uint256 } from "starknet";
 import { contractABI } from './contractABI';
 import { denomNumber, makeDenominator } from '../../denominator';
 import { l0_or_jediSWAP } from '../../dex';
-import { logger } from "../../../logger/logger";
+import { logger } from "../../logger/logger";
 import { Token } from "../../tokens/tokens";
 import { ethers } from "ethers";
 
@@ -37,7 +37,7 @@ export class L0kswap extends l0_or_jediSWAP {
             const receipt = await this.sendTransaction(contract, 'swapExactTokensForTokens', callData)
             const prettyAmountIn = ethers.formatUnits(amountIn, tokenFrom.decimals)
             const prettyAmountOut = ethers.formatUnits(amountOut, tokenTo.decimals)
-            logger.success(`Выполнен свап tx: ${receipt.transaction_hash} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
+            logger.success(`Выполнен свап tx: ${receipt} ${tokenFrom.ticker} ${prettyAmountIn} -> ${tokenTo.ticker} ${prettyAmountOut}`, this.account.address, this.taskName)
         } catch(e: any) {
             console.log([
                 amountIn, 
